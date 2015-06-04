@@ -116,7 +116,7 @@ $(document).ready(function() {
 	c.stroke();
 
 	// Draw points
-	c.fillStyle = '#333';
+	c.fillStyle = '#383838';
 
 	step = 1;
 	if (data.values.length > 100)
