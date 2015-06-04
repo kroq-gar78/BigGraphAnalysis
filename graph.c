@@ -154,7 +154,7 @@ void degreeStats(char *filename) {
 
 	printf("Highest degree:  %8d (#%d)\n", highestDegree, higestDegNum);
 	printf("Lowest degree:   %8d (#%d)\n", lowestDegree, lowestDegNum);
-	printf("Average degree:  %8d\n", averageDegree);
+	printf("Average degree:  %8ld\n", averageDegree);
 
 	writeDegreeDistribution(highestDegree, lowestDegree, averageDegree, filename);
 }
@@ -253,9 +253,9 @@ int main(int argc, char const *argv[]) {
 
 	t2 = clock() - t2; // Done processing
 
-	printf("\nGraph Read Runtime: %d clicks (%.3f seconds)\n", t1, (((float)t1)/CLOCKS_PER_SEC));
-	printf("Graph Process Runtime: %d clicks (%.3f seconds)\n", t2, (((float)t2)/CLOCKS_PER_SEC));
-	printf("Total Runtime: %d clicks (%.3f seconds)\n", t1+t2, (((float)t1+t2)/CLOCKS_PER_SEC));
+	printf("\nGraph Read Runtime: %lu clicks (%.3f seconds)\n", t1, (((float)t1)/CLOCKS_PER_SEC));
+	printf("Graph Process Runtime: %lu clicks (%.3f seconds)\n", t2, (((float)t2)/CLOCKS_PER_SEC));
+	printf("Total Runtime: %lu clicks (%.3f seconds)\n", t1+t2, (((float)t1+t2)/CLOCKS_PER_SEC));
 
 	return 0;
 }

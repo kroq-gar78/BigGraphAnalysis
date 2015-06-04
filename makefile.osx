@@ -1,10 +1,9 @@
 SOURCES := graph.o
 
 CC=clang
-CFLAGS=-fopenmp
 
 all: $(SOURCES)
-	$(CC) $(SOURCES) -fopenmp -o ReadGraph
+	$(CC) $(SOURCES) -o ReadGraph
 
 clean:
 	rm *.o ReadGraph

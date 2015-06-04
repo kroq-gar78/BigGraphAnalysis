@@ -6,7 +6,10 @@
 #include <string.h>
 #include <limits.h>
 #include <time.h>
+
+#ifdef PARALELL
 #include <omp.h>
+#endif
 
 typedef struct Node_t {
 	struct Node_t *next;
