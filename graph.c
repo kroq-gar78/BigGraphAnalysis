@@ -56,7 +56,7 @@ void writeDegreeDistribution(int higestDegNum, int lowestDegNum,
 	int numDataPoints = highestNode;
 	int step = 1;
 
-	FILE *f = fopen("data.js", "w");
+	FILE *f = fopen("web/data.js", "w");
 
 	if (!f) {
 		fprintf(stderr, "Unable to open output file\n");
@@ -113,7 +113,7 @@ void writeDegreeDistribution(int higestDegNum, int lowestDegNum,
 	fclose(f);
 	free(distribuion);
 
-	printf("Data written as \"data.js\"\n");
+	printf("Data written as \"web/data.js\"\n");
 
 }
 
