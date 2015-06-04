@@ -85,12 +85,27 @@ $(document).ready(function() {
 	}
 
 	// Draw graph
-	c.strokeStyle = '#f00';
+	c.strokeStyle = '#0a0';
+	c.fillStyle = 'rgba(0, 100, 0, 0.32)';
 	c.beginPath();
 	c.moveTo(getXPixel(0), getYPixel(data.values[0].y));
 
 	for (var i = 1; i < data.values.length; i++) {
+		if (i > 1) {
+			c.beginPath()
+			c.moveTo(getXPixel(i-1), getYPixel(data.values[i-1].y))
+		}
 		c.lineTo(getXPixel(i), getYPixel(data.values[i].y));
+		c.stroke();
+
+		c.beginPath();
+		c.moveTo(getXPixel(i-1), getYPixel(data.values[0].y));
+		c.lineTo(getXPixel(i-1), getYPixel(data.values[i-1].y));
+		c.lineTo(getXPixel(i), getYPixel(data.values[i].y));
+		c.lineTo(getXPixel(i), getYPixel(0));
+		c.closePath();
+		c.fill();
+
 	}
 	c.stroke();
 
