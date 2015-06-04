@@ -1,4 +1,5 @@
 ReadGraph
 SerialReadGraph
 a.out
+*.o
 
