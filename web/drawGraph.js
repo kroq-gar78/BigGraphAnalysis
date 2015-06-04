@@ -43,9 +43,15 @@ $(document).ready(function() {
 	graph = $('#graph');
 	var c = graph[0].getContext('2d');
 
+	var oldFill = c.fillStyle;
+
+	c.fillStyle = '#fff';
+	c.fillRect(0,0,graph.width(),graph.height());
+
 	c.lineWidth = 2;
 	c.strokeStyle = '#333';
 	c.textAlign = "center";
+	c.fillStyle = oldFill;
 
 	// draw axes
 	c.beginPath();
