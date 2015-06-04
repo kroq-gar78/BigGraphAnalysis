@@ -1,0 +1,120 @@
+var graph;
+var xPadding = 65;
+var yPadding = 70;
+var maxYKeys = 7;
+var maxXKeys = 17;
+
+function getMaxY() {
+	var max = 0;
+
+	for (var i = 0; i < data.values.length; i++) {
+		if (data.values[i].y > max) {
+			max = data.values[i].y;
+		}
+	}
+
+	max += 10 - max % 10;
+	return max;
+}
+
+function getXPixel(val) {
+	return ((graph.width() - xPadding) / data.values.length) * val + (xPadding * 1.5) - 15;
+}
+
+function getYPixel(val) {
+	return (graph.height() - 20) - ((((graph.height() - 20) - yPadding) / getMaxY()) * val) - yPadding + 19;
+}
+
+function getMostCommonDegree() {
+	var max = 0;
+	var maxIndex = 0;
+
+	for (var i = 0; i < data.values.length; i++) {
+		if (data.values[i].y > max) {
+			max = data.values[i].y;
+			maxIndex = i;
+		}
+	}
+
+	return data.values[maxIndex].x;
+}
+
+$(document).ready(function() {
+	graph = $('#graph');
+	var c = graph[0].getContext('2d');
+
+	c.lineWidth = 2;
+	c.strokeStyle = '#333';
+	c.textAlign = "center";
+
+	// draw axes
+	c.beginPath();
+	c.moveTo(xPadding + 8, 20);
+	c.lineTo(xPadding + 8, graph.height() - yPadding);
+	c.lineTo(graph.width(), graph.height() - yPadding);
+	c.stroke();
+
+	c.font = 'bold 14pt sans-serif';
+
+	// draw axis lables
+	c.fillText('Degree', graph.width()/2, graph.height() - 20);
+
+	c.save();
+	c.rotate(Math.PI/2);
+	c.fillText('#Nodes per Degree', graph.height()/2 - 15, -10);
+	c.restore();
+
+	// reset font
+	c.font = 'italic 8pt sans-serif';
+
+	// Draw x keys
+	if (data.values.length > maxXKeys)
+		var step = Math.round(data.values.length / maxXKeys);
+	else
+		step = 1;
+
+	for (var i = 0; i < Math.min(maxXKeys, data.values.length); i++) {
+		if (data.values[i*step] != undefined)
+			c.fillText(data.values[i*step].x, getXPixel(i*step), graph.height() - yPadding + 20);
+	}	
+
+	// Draw y keys
+	step = getMaxY() / maxYKeys;
+	for (var i = 0; i < maxYKeys; i++) {
+		c.fillText(Math.round(i * step), xPadding - 15, getYPixel(i * step));
+	}
+
+	// Draw graph
+	c.strokeStyle = '#f00';
+	c.beginPath();
+	c.moveTo(getXPixel(0), getYPixel(data.values[0].y));
+
+	for (var i = 1; i < data.values.length; i++) {
+		c.lineTo(getXPixel(i), getYPixel(data.values[i].y));
+	}
+	c.stroke();
+
+	// Draw points
+	c.fillStyle = '#333';
+
+	step = 1;
+	if (data.values.length > 100)
+		step = 5;
+
+	for (var i = 0; i < data.values.length; i += step) {
+		c.beginPath();
+		c.arc(getXPixel(i), getYPixel(data.values[i].y), 4, 0, Math.PI * 2, true);
+		c.fill();
+	}
+
+	// Draw info panel
+	infoElem = $('#info');
+	infoElem.html('<strong>Graph Name:</strong> ' + data.name
+			+ '<br><strong>Node Count:</strong> ' + data.nodeCount
+			+ '<br><strong>Edge Count:</strong> ' + data.edgeCount
+			+ '<br><strong>Highest Degree:</strong> ' + data.highestDeg
+			+ '<br><strong>Lowest Degree:</strong> ' + data.lowestDeg
+			+ '<br><strong>Average Degree:</strong> ' + data.avgDeg
+			+ '<br><strong>Most Common Degree:</strong> ' + getMostCommonDegree() + ' (' + getMaxY() + ' nodes)');
+
+});

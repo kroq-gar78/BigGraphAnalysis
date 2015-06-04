@@ -1,0 +1,26 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<title>Node Distribution</title>
+	<style type="text/css">
+		* {
+			font-family: 'Helvetica', sans-serif;
+		}
+
+		#info {
+			border-width: 2px;
+			border-style: solid;
+			width: 325px;
+		}
+	</style>
+	<script src="http://ajax.aspnetcdn.com/ajax/jQuery/jquery-1.6.1.min.js"></script>
+    <script type="text/javascript" src="data.js"></script>
+    <script type="text/javascript" src="drawGraph.js"></script>
+</head>
+<body>
+<h1>Node Degree Distribution</h1>
+<p style="position: absolute; top: 40px;"><em>All points shown on graph are non-zero (no degrees are shown with zero nodes)</em></p>
+<canvas id="graph" width="740" height="420"></canvas>
+<p id="info"></p>
+</body>
+</html>
