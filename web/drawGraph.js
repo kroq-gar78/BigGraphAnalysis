@@ -138,4 +138,7 @@ $(document).ready(function() {
 			+ '<br><strong>Average Degree:</strong> ' + data.avgDeg
 			+ '<br><strong>Most Common Degree:</strong> ' + getMostCommonDegree() + ' (' + getMaxY() + ' nodes)');
 
+	heading = $('#heading');
+	heading.html(heading.html() + ' <span style="font-size: 22pt">(' 
+			+ data.name + ')</span>');
 });

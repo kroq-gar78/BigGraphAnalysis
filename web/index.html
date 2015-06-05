@@ -12,14 +12,18 @@
 			border-style: solid;
 			width: 325px;
 		}
+
+		h1 {
+			font-weight: normal;
+		}
 	</style>
 	<script src="http://ajax.aspnetcdn.com/ajax/jQuery/jquery-1.6.1.min.js"></script>
     <script type="text/javascript" src="data.js"></script>
     <script type="text/javascript" src="drawGraph.js"></script>
 </head>
 <body>
-<h1>Node Degree Distribution</h1>
-<p style="position: absolute; top: 40px;"><em>All points shown on graph are non-zero (no degrees are shown with zero nodes)</em></p>
+<h1 id="heading"><strong>Node Degree Distribution:</strong></h1>
+<p style="position: absolute; top: 42.5px;"><em>All points shown on graph are non-zero (no degrees are shown with zero nodes)</em></p>
 <canvas id="graph" width="740" height="420"></canvas>
 <p id="info"></p>
 </body>
