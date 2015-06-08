@@ -65,15 +65,6 @@ void writeDegreeDistribution(int higestDegNum, int lowestDegNum,
 
 	printf("Writing degree distribution data...\n");
 
-	fprintf(f, "var data = {\n");
-	fprintf(f, "\t\"name\": \"%s\",\n", filename);
-	fprintf(f, "\t\"nodeCount\": %d,\n", highestNode);
-	fprintf(f, "\t\"edgeCount\": %d,\n", edgeCount);
-	fprintf(f, "\t\"highestDeg\": %d,\n", higestDegNum);
-	fprintf(f, "\t\"lowestDeg\": %d,\n", lowestDegNum);
-	fprintf(f, "\t\"avgDeg\": %d,\n", avgDegree);
-	fprintf(f, "\t\"values\": [\n");
-
 	int *distribuion = (int *)malloc(sizeof(int)*higestDegNum+1);
 	int chunk = higestDegNum / 10;
 	int i;
@@ -89,6 +80,7 @@ void writeDegreeDistribution(int higestDegNum, int lowestDegNum,
 		int degree = countDegree(graph[i]);
 
 		if (degree > 0) {
+			#pragma omp atomic
 			distribuion[degree] += 1;
 		}
 	}
@@ -98,6 +90,34 @@ void writeDegreeDistribution(int higestDegNum, int lowestDegNum,
 		numDataPoints = highestNode;
 		step = higestDegNum / MAX_DATA_POINTS;
 	}
+
+	long variance = 0;
+
+	// standard deviation
+#pragma omp parallel shared(variance, avgDegree), private(i)
+{
+	#pragma omp for reduction(+: variance)
+	for (i = 0; i < highestNode; i++) {
+		int degree = countDegree(graph[i]);
+		int val = degree - avgDegree;
+		val *= val;
+		variance += val;
+	}
+}
+	
+	variance /= highestNode;
+	double standardDev = sqrt(variance);
+	printf("Standard deviation is: %lf\n", standardDev);
+
+	fprintf(f, "var data = {\n");
+	fprintf(f, "\t\"name\": \"%s\",\n", filename);
+	fprintf(f, "\t\"nodeCount\": %d,\n", highestNode);
+	fprintf(f, "\t\"edgeCount\": %d,\n", edgeCount);
+	fprintf(f, "\t\"highestDeg\": %d,\n", higestDegNum);
+	fprintf(f, "\t\"lowestDeg\": %d,\n", lowestDegNum);
+	fprintf(f, "\t\"avgDeg\": %d,\n", avgDegree);
+	fprintf(f, "\t\"standardDev\": %lf,\n", standardDev);
+	fprintf(f, "\t\"values\": [\n");
 
 	for (i = 0; i <= higestDegNum; i++) {
 		if (i > 0 && distribuion[i] == 0) {

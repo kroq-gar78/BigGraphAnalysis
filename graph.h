@@ -6,6 +6,7 @@
 #include <string.h>
 #include <limits.h>
 #include <time.h>
+#include <math.h>
 
 #ifdef PARALELL
 #include <omp.h>

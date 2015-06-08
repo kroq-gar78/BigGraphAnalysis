@@ -136,7 +136,8 @@ $(document).ready(function() {
 			+ '<br><strong>Highest Degree:</strong> ' + data.highestDeg
 			+ '<br><strong>Lowest Degree:</strong> ' + data.lowestDeg
 			+ '<br><strong>Average Degree:</strong> ' + data.avgDeg
-			+ '<br><strong>Most Common Degree:</strong> ' + getMostCommonDegree() + ' (' + getMaxY() + ' nodes)');
+			+ '<br><strong>Most Common Degree:</strong> ' + getMostCommonDegree() + ' (' + getMaxY() + ' nodes)'
+			+ '<br><strong>Standard Deviation:</strong> ' + data.standardDev);
 
 	heading = $('#heading');
 	heading.html(heading.html() + ' <span style="font-size: 22pt">(' 
