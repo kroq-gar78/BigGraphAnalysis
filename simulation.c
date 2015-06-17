@@ -1,6 +1,8 @@
 #include "simulation.h"
 #include "graph.h"
 
+int infectiousPeriod;
+
 bool allInfected() {
 	bool isAllInfected = true;
 
@@ -23,17 +25,30 @@ int seedInfection() {
 	return patientZero;
 }
 
-int infectNeighbors(Node *node) {
+int infectNeighbors(Node *node, int round) {
+	if (round == node->roundInfected) {
+		// can't infect in the same round we got infected
+		return 0;
+	}
+
 	Node *temp = node->next;
 
 	int newInfectious = 0;
 	while (temp != NULL) {
 		if (graph[temp->vertexNum] != NULL && !graph[temp->vertexNum]->isInfected) {
+			if (graph[temp->vertexNum]->isRecovered) {
+				temp->isRecovered = true;
+				temp = temp->next;
+				continue;
+			}
+
 			float chance = (float)(rand() % 100) / 100;
 
 			if (chance < infectiousProbability) {
 				temp->isInfected = true;
+				temp->roundInfected = round;
 				graph[temp->vertexNum]->isInfected = true;
+				graph[temp->vertexNum]->roundInfected = round;
 				newInfectious++;
 			}
 		}
@@ -42,6 +57,18 @@ int infectNeighbors(Node *node) {
 	}
 
 	return newInfectious;
+}
+
+bool checkRecovery(Node *node, int round) {
+	if (node == NULL) return false;
+
+	if (round - node->roundInfected >= infectiousPeriod) {
+		node->isInfected = false;
+		node->isRecovered = true;
+		return true;
+	}
+
+	return false;
 }
 
 int numberInfected() {
@@ -68,7 +95,7 @@ void drawProgressBar(int i, int simulDuration) {
 	//fflush(stdout);
 }
 
-void runSimulation() {
+void runSimulation(char *graphName) {
 	srand(time(NULL));
 
 	printf("Enter the probability of an agent to become Infections: ");
@@ -83,11 +110,17 @@ void runSimulation() {
 	printf("How many timesteps for this simulation: ");
 	scanf("%d", &simulDuration);
 
+	printf("Enter the period an agent will remain infectious: ");
+	scanf("%d", &infectiousPeriod);
+
 	int *newInfectious = (int *)malloc(sizeof(int)*simulDuration);
+	int *totalInfectious = (int *)malloc(sizeof(int)*simulDuration);
 
 	printf("\n");
 
-	int i, j, zero;
+	///// SIMULATION /////
+
+	int i, j, zero, totalInfections = 0;
 	for (i = 0; i < simulDuration; i++) {
 		//drawProgressBar(i, simulDuration);
 		printf("\rPeforming timestep %d", i);
@@ -96,35 +129,68 @@ void runSimulation() {
 
 		int infectionsThisRound = 0;
 		for (j = 0; j < highestNode; j++) {
+			checkRecovery(graph[j], i);
+
 			if (graph[j] != NULL && graph[j]->isInfected)
-				infectionsThisRound += infectNeighbors(graph[j]);
+				infectionsThisRound += infectNeighbors(graph[j], i);
 		}
 		newInfectious[i] = infectionsThisRound;
+		totalInfections += infectionsThisRound;
+		totalInfectious[i] = numberInfected();
 
 		if (allInfected())
 			break;
 	}
 
+	///// END SIMULATION /////
+
 	printf("\n======== Simulation Results ========\n");
 	printf("Duration: %d timesteps\n", simulDuration);
 	printf("PatientZero: %d\n", zero);
-	printf("Number Infected: %d/%d\n", numberInfected(), highestNode);
+	printf("Number Infected: %d/%d\n", totalInfections, highestNode);
 
-	if (allInfected()) {
+	bool isAllInfected = allInfected();
+	if (isAllInfected) {
 		printf("\nAll agents were infected by round: %d\n", i);
 	}
 
-	FILE *output = fopen("results.txt", "w");
+	FILE *output = fopen("web/infData.js", "w");
 	if (!output) {
 		fprintf(stderr, "Could not open output file\n");
 		exit(1);
 	}
 
-	fprintf(output, "----- Per Round Infections -----\n");
-	for (j = 0; j <= i; j++) {
-		fprintf(output, "Round %d: %d\n", j, newInfectious[j]);
+	fprintf(output, "var data = {\n");
+	fprintf(output, "\t\"name\": \"%s\",\n", graphName);
+	fprintf(output, "\t\"nodeCount\": %d,\n", highestNode);
+	fprintf(output, "\t\"edgeCount\": %d,\n", edgeCount);
+	fprintf(output, "\t\"infectionCount\": %d,\n", totalInfections);
+	fprintf(output, "\t\"patientZero\": %d,\n", zero);
+	fprintf(output, "\t\"simulDuration\": %d,\n", simulDuration);
+	fprintf(output, "\t\"infectionChance\": %f,\n", infectiousProbability);
+	fprintf(output, "\t\"infectionPeriod\": %d,\n", infectiousPeriod);
+
+	if (isAllInfected) {
+		fprintf(output, "\t\"endStep\": %d,\n", i);
 	}
 
+	// Rate of infection
+	fprintf(output, "\t\"values\": [\n");
+	for (j = 0; j <= i; j++) {
+		fprintf(output, "\t\t{\"x\": %d, \"y\": %d},\n", j, newInfectious[j]);
+	}
+	fprintf(output, "\t],\n");
+
+	// number of infected
+	fprintf(output, "\t\"numInf\": [\n");
+	for (j = 0; j <= i; j++) {
+		fprintf(output, "\t\t{\"x\": %d, \"y\": %d},\n", j, totalInfectious[j]);
+	}
+	fprintf(output, "\t]\n");
+
+	fprintf(output, "}\n");
+
+	free(newInfectious);
 	fclose(output);
 	printf("\nPer round results written to \"results.txt\"\n");
 }

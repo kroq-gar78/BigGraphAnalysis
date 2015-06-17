@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<title>Node Distribution</title>
+	<style type="text/css">
+		* {
+			font-family: 'Helvetica', sans-serif;
+		}
+
+		#info {
+			border-width: 2px;
+			border-style: solid;
+			width: 325px;
+		}
+
+		h1 {
+			font-weight: normal;
+		}
+	</style>
+	<script src="http://ajax.aspnetcdn.com/ajax/jQuery/jquery-1.6.1.min.js"></script>
+    <script type="text/javascript" src="infData.js"></script>
+    <script type="text/javascript" src="drawInfection.js"></script>
+</head>
+<body>
+<h1 id="heading"><strong>Infection Rate:</strong></h1>
+<canvas id="graph" width="740" height="420"></canvas>
+<canvas id="sirGraph" width="740" height="420"></canvas>
+<p id="info"></p>
+</body>
+</html>

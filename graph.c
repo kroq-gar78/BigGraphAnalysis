@@ -5,11 +5,18 @@
 
 int rank;
 
+Node *createNode(int vertexNum) {
+	Node *newNode = (Node *)malloc(sizeof(Node));
+
+	newNode->vertexNum = vertexNum;
+	newNode->isInfected = false;
+	newNode->isRecovered = false;
+	newNode->roundInfected = -1;
+}
+
 void connectNode(int src, int dest) {
 	if (graph[src] == NULL) {
-		Node *head = (Node *)malloc(sizeof(Node));
-		head->vertexNum = src;
-		head->isInfected = false;
+		Node *head = createNode(src);
 		graph[src] = head;
 	}
 
@@ -17,15 +24,11 @@ void connectNode(int src, int dest) {
 	while (temp->next != NULL)
 		temp = temp->next;
 
-	Node *newNode = (Node *)malloc(sizeof(Node));
-	newNode->vertexNum = dest;
-	newNode->isInfected = false;
+	Node *newNode = createNode(dest);
 	temp->next = newNode;
 
 	if (graph[dest] == NULL) {
-		Node *head = (Node *)malloc(sizeof(Node));
-		head->vertexNum = dest;
-		head->isInfected = false;
+		Node *head = createNode(dest);
 		graph[dest] = head;
 	}
 
@@ -33,9 +36,7 @@ void connectNode(int src, int dest) {
 	while (temp->next != NULL)
 		temp = temp->next;
 
-	newNode = (Node *)malloc(sizeof(Node));
-	newNode->vertexNum = src;
-	newNode->isInfected = false;
+	newNode = createNode(src);
 	temp->next = newNode;
 
 	edgeCount++;
@@ -277,7 +278,7 @@ int main(int argc, char const *argv[]) {
 	if (choice == 'a')
 		graphStats(tok);
 	else
-		runSimulation();
+		runSimulation(tok);
 
 	free(temp);
 	free(graph);

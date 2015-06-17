@@ -19,6 +19,8 @@ typedef struct Node_t {
 	int vertexNum;
 
 	bool isInfected;
+	bool isRecovered;
+	int roundInfected;
 
 } Node;
 
