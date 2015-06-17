@@ -1,15 +1,15 @@
 #include "graph.h"
+#include "simulation.h"
 
 #define MAX_DATA_POINTS 100
 
-int highestNode = 0;
-int edgeCount = 0;
 int rank;
 
 void connectNode(int src, int dest) {
 	if (graph[src] == NULL) {
 		Node *head = (Node *)malloc(sizeof(Node));
 		head->vertexNum = src;
+		head->isInfected = false;
 		graph[src] = head;
 	}
 
@@ -19,11 +19,13 @@ void connectNode(int src, int dest) {
 
 	Node *newNode = (Node *)malloc(sizeof(Node));
 	newNode->vertexNum = dest;
+	newNode->isInfected = false;
 	temp->next = newNode;
 
 	if (graph[dest] == NULL) {
 		Node *head = (Node *)malloc(sizeof(Node));
 		head->vertexNum = dest;
+		head->isInfected = false;
 		graph[dest] = head;
 	}
 
@@ -33,6 +35,7 @@ void connectNode(int src, int dest) {
 
 	newNode = (Node *)malloc(sizeof(Node));
 	newNode->vertexNum = src;
+	newNode->isInfected = false;
 	temp->next = newNode;
 
 	edgeCount++;
@@ -206,7 +209,8 @@ void printGraph() {
 int main(int argc, char const *argv[]) {
 	
 	if (argc != 2) {
-		fprintf(stderr, "Specify a graph file\n");
+		fprintf(stderr, "Usage: %s <graphFile>\n", argv[0]);
+		fprintf(stderr, "<graphFile>: Name of graph to test\n");
 		exit(1);
 	}
 
@@ -266,7 +270,14 @@ int main(int argc, char const *argv[]) {
 		tok = strtok((char *)argv[1], ".");
 	}
 
-	graphStats(tok);
+	char choice = 'z';
+	printf("[a]nalyze graph or [r]un simulation: ");
+	scanf("%c", &choice);
+
+	if (choice == 'a')
+		graphStats(tok);
+	else
+		runSimulation();
 
 	free(temp);
 	free(graph);

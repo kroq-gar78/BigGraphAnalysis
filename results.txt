@@ -1,0 +1,20 @@
+----- Per Round Infections -----
+Round 0: 0
+Round 1: 0
+Round 2: 13
+Round 3: 50
+Round 4: 1063
+Round 5: 12448
+Round 6: 19001
+Round 7: 10417
+Round 8: 3767
+Round 9: 1338
+Round 10: 418
+Round 11: 184
+Round 12: 58
+Round 13: 26
+Round 14: 8
+Round 15: 5
+Round 16: 4
+Round 17: 1
+Round 18: 1

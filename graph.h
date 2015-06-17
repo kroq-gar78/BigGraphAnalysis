@@ -4,6 +4,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+#include <stdbool.h>
 #include <limits.h>
 #include <time.h>
 #include <math.h>
@@ -17,8 +18,14 @@ typedef struct Node_t {
 
 	int vertexNum;
 
+	bool isInfected;
+
 } Node;
 
 Node **graph;
+
+float infectiousProbability;
+int highestNode;
+int edgeCount;
 
 #endif
