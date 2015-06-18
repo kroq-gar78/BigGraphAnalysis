@@ -17,6 +17,20 @@ bool allInfected() {
 	return isAllInfected;
 }
 
+bool allRecovered() {
+	bool isAllRecovered = true;
+
+	int i;
+	for (i = 0; i <= highestNode; i++) {
+		if (graph[i] != NULL && !graph[i]->isRecovered) {
+			isAllRecovered = false;
+			break;
+		}
+	}
+
+	return isAllRecovered;
+}
+
 int seedInfection() {
 	int patientZero = rand() % highestNode;
 
@@ -142,7 +156,7 @@ void runSimulation(char *graphName) {
 
 	///// SIMULATION /////
 
-	int i, j, zero, totalInfections = 0, numRecovered = 0;
+	int i, j, zero, totalInfections = 0, numRecovered = 0, infectedRound = -1;
 	for (i = 0; i < simulDuration; i++) {
 		//drawProgressBar(i, simulDuration);
 		printf("\rPeforming timestep %d", i);
@@ -151,6 +165,8 @@ void runSimulation(char *graphName) {
 
 		int infectionsThisRound = 0, recoveredThisRound = 0;
 		for (j = 0; j < highestNode; j++) {
+			if (graph[j] != NULL && graph[j]->isRecovered) continue;
+
 			if (checkRecovery(graph[j], i))
 				recoveredThisRound++;
 
@@ -165,8 +181,10 @@ void runSimulation(char *graphName) {
 		totalRecovered[i]  = numberRecovered();
 		totalSusceptible[i] = numberSusceptible();
 
-		if (allInfected())
+		if (allRecovered())
 			break;
+		else if (allInfected())
+			infectedRound = i;
 	}
 
 	///// END SIMULATION /////
@@ -176,9 +194,9 @@ void runSimulation(char *graphName) {
 	printf("PatientZero: %d\n", zero);
 	printf("Number Infected: %d/%d\n", totalInfections, highestNode);
 
-	bool isAllInfected = allInfected();
+	bool isAllInfected = (infectedRound > -1);
 	if (isAllInfected) {
-		printf("\nAll agents were infected by round: %d\n", i);
+		printf("\nAll agents were infected by round: %d\n", infectedRound);
 	}
 
 	FILE *output = fopen("web/infData.js", "w");
@@ -198,7 +216,7 @@ void runSimulation(char *graphName) {
 	fprintf(output, "\t\"infectionPeriod\": %d,\n", infectiousPeriod);
 
 	if (isAllInfected) {
-		fprintf(output, "\t\"endStep\": %d,\n", i);
+		fprintf(output, "\t\"endStep\": %d,\n", infectedRound);
 	}
 
 	// Rate of infection
