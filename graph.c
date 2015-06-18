@@ -12,6 +12,8 @@ Node *createNode(int vertexNum) {
 	newNode->isInfected = false;
 	newNode->isRecovered = false;
 	newNode->roundInfected = -1;
+	
+	return newNode;
 }
 
 void connectNode(int src, int dest) {
