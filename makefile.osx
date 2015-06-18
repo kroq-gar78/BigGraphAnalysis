@@ -1,9 +1,10 @@
-SOURCES := graph.o
+SOURCES := graph.o simulation.o
 
 CC=clang
+CFLAGS=-lm
 
 all: $(SOURCES)
-	$(CC) $(SOURCES) -o ReadGraph
+	$(CC) $(SOURCES) -lm -o ReadGraph
 
 clean:
 	rm *.o ReadGraph
