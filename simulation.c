@@ -60,7 +60,7 @@ int infectNeighbors(Node *node, int round) {
 }
 
 bool checkRecovery(Node *node, int round) {
-	if (node == NULL) return false;
+	if (node == NULL || !node->isInfected) return false;
 
 	if (round - node->roundInfected >= infectiousPeriod) {
 		node->isInfected = false;
@@ -79,6 +79,26 @@ int numberInfected() {
 	}
 
 	return numInfected;
+}
+
+int numberRecovered() {
+	int i, numRecovered = 0;
+	for (i = 0; i <= highestNode; i++) {
+		if (graph[i] != NULL && graph[i]->isRecovered)
+			numRecovered++;
+	}
+
+	return numRecovered;
+}
+
+int numberSusceptible() {
+	int i, numSusceptible = 0;
+	for (i = 0; i <= highestNode; i++) {
+		if (graph[i] != NULL && !graph[i]->isInfected && !graph[i]->isRecovered)
+			numSusceptible++;
+	}
+
+	return numSusceptible;
 }
 
 void drawProgressBar(int i, int simulDuration) {
@@ -115,28 +135,35 @@ void runSimulation(char *graphName) {
 
 	int *newInfectious = (int *)malloc(sizeof(int)*simulDuration);
 	int *totalInfectious = (int *)malloc(sizeof(int)*simulDuration);
+	int *totalRecovered = (int *)malloc(sizeof(int)*simulDuration);
+	int *totalSusceptible = (int *)malloc(sizeof(int)*simulDuration);
 
 	printf("\n");
 
 	///// SIMULATION /////
 
-	int i, j, zero, totalInfections = 0;
+	int i, j, zero, totalInfections = 0, numRecovered = 0;
 	for (i = 0; i < simulDuration; i++) {
 		//drawProgressBar(i, simulDuration);
 		printf("\rPeforming timestep %d", i);
 		if (i == 0)
 			zero = seedInfection();
 
-		int infectionsThisRound = 0;
+		int infectionsThisRound = 0, recoveredThisRound = 0;
 		for (j = 0; j < highestNode; j++) {
-			checkRecovery(graph[j], i);
+			if (checkRecovery(graph[j], i))
+				recoveredThisRound++;
 
 			if (graph[j] != NULL && graph[j]->isInfected)
 				infectionsThisRound += infectNeighbors(graph[j], i);
 		}
-		newInfectious[i] = infectionsThisRound;
-		totalInfections += infectionsThisRound;
+		
+		newInfectious[i]   = infectionsThisRound;
+		totalInfections   += infectionsThisRound;
 		totalInfectious[i] = numberInfected();
+		numRecovered 	  += recoveredThisRound;
+		totalRecovered[i]  = numberRecovered();
+		totalSusceptible[i] = numberSusceptible();
 
 		if (allInfected())
 			break;
@@ -186,11 +213,28 @@ void runSimulation(char *graphName) {
 	for (j = 0; j <= i; j++) {
 		fprintf(output, "\t\t{\"x\": %d, \"y\": %d},\n", j, totalInfectious[j]);
 	}
+	fprintf(output, "\t],\n");
+
+	// number of recovered
+	fprintf(output, "\t\"numRec\": [\n");
+	for (j = 0; j <= i; j++) {
+		fprintf(output, "\t\t{\"x\": %d, \"y\": %d},\n", j, totalRecovered[j]);
+	}
+	fprintf(output, "\t],\n");
+
+	// number of susceptible
+	fprintf(output, "\t\"numSus\": [\n");
+	for (j = 0; j <= i; j++) {
+		fprintf(output, "\t\t{\"x\": %d, \"y\": %d},\n", j, totalSusceptible[j]);
+	}
 	fprintf(output, "\t]\n");
 
 	fprintf(output, "}\n");
 
 	free(newInfectious);
+	free(totalInfectious);
+	free(totalRecovered);
+
 	fclose(output);
 	printf("\nPer round results written to \"results.txt\"\n");
 }

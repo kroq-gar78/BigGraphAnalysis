@@ -133,13 +133,14 @@ $(document).ready(function() {
 	// Draw info panel
 	infoElem = $('#info');
 	infoElem.html('<strong>Graph Name:</strong> ' + data.name
-			+ '<br><strong>Node Count:</strong> ' + data.nodeCount
-			+ '<br><strong>Edge Count:</strong> ' + data.edgeCount
-			+ '<br><strong>Total Infected:</strong> ' + data.infectionCount + "/" + data.nodeCount
-			+ '<br><strong>Patient Zero:</strong> ' + data.patientZero
+			+ '<br><strong>Node Count:</strong> ' + data.nodeCount.toLocaleString()
+			+ '<br><strong>Edge Count:</strong> ' + data.edgeCount.toLocaleString()
+			+ '<br><strong>Total Infected:</strong> ' + data.infectionCount.toLocaleString() + "/" + data.nodeCount.toLocaleString() 
+			+ ' (' + ((data.infectionCount/data.nodeCount)*100).toFixed(2) + '%)'
+			+ '<br><strong>Patient Zero:</strong> ' + data.patientZero.toLocaleString()
 			+ '<br><strong>Chance of Infection:</strong> ' + (data.infectionChance * 100) + '%'
-			+ '<br><strong>Simulation Duration:</strong> ' + data.simulDuration
-			+ '<br><strong>Infectious Period:</strong> ' + data.infectionPeriod);
+			+ '<br><strong>Simulation Duration:</strong> ' + data.simulDuration.toLocaleString()
+			+ '<br><strong>Infectious Period:</strong> ' + data.infectionPeriod.toLocaleString());
 
 	if (data.endStep != undefined) {
 		infoElem.html(infoElem.html() + '<br><strong>All Infected By:</strong>'
@@ -154,9 +155,9 @@ $(document).ready(function() {
 function sirGetMaxY() {
 	var max = 0;
 
-	for (var i = 0; i < data.numInf.length; i++) {
-		if (data.numInf[i].y > max) {
-			max = data.numInf[i].y;
+	for (var i = 0; i < data.numSus.length; i++) {
+		if (data.numSus[i].y > max) {
+			max = data.numSus[i].y;
 		}
 	}
 
@@ -223,30 +224,16 @@ function drawSIRGraph() {
 		c.fillText(Math.round(i * step), xPadding - 15, sirGetYPixel(i * step));
 	}
 
-	// Draw graph
-	c.strokeStyle = '#0a0';
+	// Draw infections graph
+	c.strokeStyle = '#a00';
 	c.fillStyle = 'rgba(0, 100, 0, 0.32)';
 	c.beginPath();
 	c.moveTo(sirGetXPixel(0), sirGetYPixel(data.numInf[0].y));
-
 	for (var i = 1; i < data.numInf.length; i++) {
-		if (i > 1) {
-			c.beginPath()
-			c.moveTo(sirGetXPixel(i-1), sirGetYPixel(data.numInf[i-1].y))
-		}
 		c.lineTo(sirGetXPixel(i), sirGetYPixel(data.numInf[i].y));
-		c.stroke();
-
-		c.beginPath();
-		c.moveTo(sirGetXPixel(i-1), sirGetYPixel(0));
-		c.lineTo(sirGetXPixel(i-1), sirGetYPixel(data.numInf[i-1].y));
-		c.lineTo(sirGetXPixel(i), sirGetYPixel(data.numInf[i].y));
-		c.lineTo(sirGetXPixel(i), sirGetYPixel(0));
-		c.closePath();
-		c.fill();
 
 	}
-	//c.stroke();
+	c.stroke();
 
 	// Draw points
 	c.fillStyle = '#383838';
@@ -258,6 +245,36 @@ function drawSIRGraph() {
 	for (var i = 0; i < data.numInf.length; i += step) {
 		c.beginPath();
 		c.arc(sirGetXPixel(i), sirGetYPixel(data.numInf[i].y), 4, 0, Math.PI * 2, true);
+		c.fill();
+	}
+
+	// Draw recovered graph
+	c.strokeStyle = '#00a';
+	c.beginPath();
+	c.moveTo(sirGetXPixel(0), sirGetYPixel(data.numRec[0].y));
+	for (var i = 1; i < data.numRec.length; i++) {
+		c.lineTo(sirGetXPixel(i), sirGetYPixel(data.numRec[i].y));
+	}
+	c.stroke();
+
+	for (var i = 0; i < data.numRec.length; i+= step) {
+		c.beginPath();
+		c.arc(sirGetXPixel(i), sirGetYPixel(data.numRec[i].y), 4, 0, Math.PI * 2, true);
+		c.fill();
+	}
+
+	// Draw susceptible graph
+	c.strokeStyle = '#0a0';
+	c.beginPath();
+	c.moveTo(sirGetXPixel(0), sirGetYPixel(data.numSus[0].y));
+	for (var i = 1; i < data.numSus.length; i++) {
+		c.lineTo(sirGetXPixel(i), sirGetYPixel(data.numSus[i].y));
+	}
+	c.stroke();
+
+	for (var i = 0; i < data.numSus.length; i+= step) {
+		c.beginPath();
+		c.arc(sirGetXPixel(i), sirGetYPixel(data.numSus[i].y), 4, 0, Math.PI * 2, true);
 		c.fill();
 	}
 }

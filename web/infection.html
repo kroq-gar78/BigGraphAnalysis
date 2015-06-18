@@ -1,16 +1,27 @@
 <!DOCTYPE html>
 <html>
 <head>
-	<title>Node Distribution</title>
+	<title>Infection Rate</title>
 	<style type="text/css">
 		* {
 			font-family: 'Helvetica', sans-serif;
 		}
 
-		#info {
+		p {
 			border-width: 2px;
 			border-style: solid;
+		}
+
+		#info {
 			width: 325px;
+			display: inline-block;
+		}
+
+		#key {
+			display: inline-block;
+			position: absolute;
+			left: 780px;
+			width: 100px;
 		}
 
 		h1 {
@@ -26,5 +37,9 @@
 <canvas id="graph" width="740" height="420"></canvas>
 <canvas id="sirGraph" width="740" height="420"></canvas>
 <p id="info"></p>
+<p id="key"><strong>KEY</strong>
+<br><span style="color: #080;">Susceptible</span>
+<br><span style="color: #a00;">Infectous</span>
+<br><span style="color: #00a;">Recovered</span></p>
 </body>
 </html>
