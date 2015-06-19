@@ -3,4 +3,5 @@ SerialReadGraph
 a.out
 Graph_Xcode
 *.o
-
+web/data.js
+web/infData.js
