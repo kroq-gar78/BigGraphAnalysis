@@ -16,6 +16,19 @@ Node *createNode(int vertexNum) {
 	return newNode;
 }
 
+bool checkConnection(Node *srcNode, int dest) {
+	Node *temp = srcNode->next;
+
+	while (temp != NULL) {
+		if (temp->vertexNum == dest)
+			return true;
+
+		temp = temp->next;
+	}
+
+	return false;
+}
+
 void connectNode(int src, int dest) {
 	if (graph[src] == NULL) {
 		Node *head = createNode(src);
@@ -23,11 +36,15 @@ void connectNode(int src, int dest) {
 	}
 
 	Node *temp = graph[src];
-	while (temp->next != NULL)
-		temp = temp->next;
+	Node *newNode;
+	
+	if (!checkConnection(temp, dest)) {
+		while (temp->next != NULL)
+			temp = temp->next;
 
-	Node *newNode = createNode(dest);
-	temp->next = newNode;
+		newNode = createNode(dest);
+		temp->next = newNode;
+	}
 
 	if (graph[dest] == NULL) {
 		Node *head = createNode(dest);
@@ -35,11 +52,14 @@ void connectNode(int src, int dest) {
 	}
 
 	temp = graph[dest];
-	while (temp->next != NULL)
-		temp = temp->next;
+	
+	if (!checkConnection(temp, src)) {
+		while (temp->next != NULL)
+			temp = temp->next;
 
-	newNode = createNode(src);
-	temp->next = newNode;
+		newNode = createNode(src);
+		temp->next = newNode;
+	}
 
 	edgeCount++;
 }

@@ -2,6 +2,7 @@
 #include "graph.h"
 
 int infectiousPeriod;
+float contactChance;
 
 bool allInfected() {
 	bool isAllInfected = true;
@@ -35,6 +36,7 @@ int seedInfection() {
 	int patientZero = rand() % highestNode;
 
 	graph[patientZero]->isInfected = true;
+	graph[patientZero]->roundInfected = 0;
 
 	return patientZero;
 }
@@ -55,6 +57,10 @@ int infectNeighbors(Node *node, int round) {
 				temp = temp->next;
 				continue;
 			}
+
+			// Check if we contact the other agent
+			float contact = (float)(rand() % 100) / 100;
+			if (contact > contactChance) { continue; }
 
 			float chance = (float)(rand() % 100) / 100;
 
@@ -135,6 +141,9 @@ void runSimulation(char *graphName) {
 	printf("Enter the probability of an agent to become Infections: ");
 	scanf("%f", &infectiousProbability);
 
+	printf("Enter the probability of contact between agents: ");
+	scanf("%f", &contactChance);
+
 	if (infectiousProbability > 1.0 || infectiousProbability < 0.0) {
 		fprintf(stderr, "Invalid Probability entered. Use a number between 0 and 1\n");
 		exit(1);
@@ -174,11 +183,11 @@ void runSimulation(char *graphName) {
 				infectionsThisRound += infectNeighbors(graph[j], i);
 		}
 		
-		newInfectious[i]   = infectionsThisRound;
-		totalInfections   += infectionsThisRound;
-		totalInfectious[i] = numberInfected();
-		numRecovered 	  += recoveredThisRound;
-		totalRecovered[i]  = numberRecovered();
+		newInfectious[i]    = infectionsThisRound;
+		totalInfections    += infectionsThisRound;
+		totalInfectious[i]  = numberInfected();
+		numRecovered 	   += recoveredThisRound;
+		totalRecovered[i]   = numberRecovered();
 		totalSusceptible[i] = numberSusceptible();
 
 		if (allRecovered())
@@ -213,6 +222,7 @@ void runSimulation(char *graphName) {
 	fprintf(output, "\t\"patientZero\": %d,\n", zero);
 	fprintf(output, "\t\"simulDuration\": %d,\n", simulDuration);
 	fprintf(output, "\t\"infectionChance\": %f,\n", infectiousProbability);
+	fprintf(output, "\t\"contactChance\": %f,\n", contactChance);
 	fprintf(output, "\t\"infectionPeriod\": %d,\n", infectiousPeriod);
 
 	if (isAllInfected) {
@@ -221,28 +231,28 @@ void runSimulation(char *graphName) {
 
 	// Rate of infection
 	fprintf(output, "\t\"values\": [\n");
-	for (j = 0; j <= i; j++) {
+	for (j = 0; j < i; j++) {
 		fprintf(output, "\t\t{\"x\": %d, \"y\": %d},\n", j, newInfectious[j]);
 	}
 	fprintf(output, "\t],\n");
 
 	// number of infected
 	fprintf(output, "\t\"numInf\": [\n");
-	for (j = 0; j <= i; j++) {
+	for (j = 0; j < i; j++) {
 		fprintf(output, "\t\t{\"x\": %d, \"y\": %d},\n", j, totalInfectious[j]);
 	}
 	fprintf(output, "\t],\n");
 
 	// number of recovered
 	fprintf(output, "\t\"numRec\": [\n");
-	for (j = 0; j <= i; j++) {
+	for (j = 0; j < i; j++) {
 		fprintf(output, "\t\t{\"x\": %d, \"y\": %d},\n", j, totalRecovered[j]);
 	}
 	fprintf(output, "\t],\n");
 
 	// number of susceptible
 	fprintf(output, "\t\"numSus\": [\n");
-	for (j = 0; j <= i; j++) {
+	for (j = 0; j < i; j++) {
 		fprintf(output, "\t\t{\"x\": %d, \"y\": %d},\n", j, totalSusceptible[j]);
 	}
 	fprintf(output, "\t]\n");

@@ -139,6 +139,7 @@ $(document).ready(function() {
 			+ ' (' + ((data.infectionCount/data.nodeCount)*100).toFixed(2) + '%)'
 			+ '<br><strong>Patient Zero:</strong> ' + data.patientZero.toLocaleString()
 			+ '<br><strong>Chance of Infection:</strong> ' + (data.infectionChance * 100) + '%'
+			+ '<br><strong>Chance of Contact:</strong> ' + Math.floor((data.contactChance * 100)) + '%'
 			+ '<br><strong>Simulation Duration:</strong> ' + data.simulDuration.toLocaleString()
 			+ '<br><strong>Infectious Period:</strong> ' + data.infectionPeriod.toLocaleString());
 
