@@ -7,4 +7,4 @@ all: $(SOURCES)
 	$(CC) $(SOURCES) -fopenmp -lm -g -o ReadGraph
 
 clean:
-	rm *.o ReadGraph
+	rm -f *.o ReadGraph

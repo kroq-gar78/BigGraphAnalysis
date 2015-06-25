@@ -1,3 +1,13 @@
+/**
+ * Generate a graph with a ring structure
+ *
+ * Usage: RingGenerate <numNodes> [outputfile]
+ *
+ * If no output file specified, output to stdout
+ *
+ * compiled with: gcc RingGenerate.c -o RingGenerate
+ */
+
 #include <stdio.h>
 #include <stdlib.h>
 

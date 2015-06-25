@@ -91,15 +91,15 @@ void writeDegreeDistribution(int higestDegNum, int lowestDegNum,
 
 	printf("Writing degree distribution data...\n");
 
-	int *distribuion = (int *)malloc(sizeof(int)*higestDegNum+1);
+	int *distribution = (int *)malloc(sizeof(int)*higestDegNum+1);
 	int chunk = higestDegNum / 10;
 	int i;
 
-#pragma omp parallel shared(higestDegNum, distribuion, chunk), private(i)
+#pragma omp parallel shared(higestDegNum, distribution, chunk), private(i)
 {
 	#pragma omp for schedule(dynamic,chunk) nowait
 	for (i = 0; i <= higestDegNum; i++)
-		distribuion[i] = 0;
+		distribution[i] = 0;
 
 	#pragma omp for schedule(dynamic, chunk)
 	for (i = 0; i < highestNode; i++) {
@@ -107,7 +107,7 @@ void writeDegreeDistribution(int higestDegNum, int lowestDegNum,
 
 		if (degree > 0) {
 			#pragma omp atomic
-			distribuion[degree] += 1;
+			distribution[degree] += 1;
 		}
 	}
 }
@@ -146,18 +146,18 @@ void writeDegreeDistribution(int higestDegNum, int lowestDegNum,
 	fprintf(f, "\t\"values\": [\n");
 
 	for (i = 0; i <= higestDegNum; i++) {
-		if (i > 0 && distribuion[i] == 0) {
+		if (i > 0 && distribution[i] == 0) {
 			continue;
 		}
 
-		fprintf(f, "\t\t{\"x\": %d, \"y\": %d},\n", i, distribuion[i]);
+		fprintf(f, "\t\t{\"x\": %d, \"y\": %d},\n", i, distribution[i]);
 	}
 
 	fprintf(f, "\t]\n");
 	fprintf(f, "}\n");
 
 	fclose(f);
-	free(distribuion);
+	free(distribution);
 
 	printf("Data written as \"web/data.js\"\n");
 
