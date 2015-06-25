@@ -11,6 +11,7 @@ Node *createNode(int vertexNum) {
 	newNode->vertexNum = vertexNum;
 	newNode->isInfected = false;
 	newNode->isRecovered = false;
+	newNode->isVaccinated = false;
 	newNode->roundInfected = -1;
 	
 	return newNode;

@@ -20,6 +20,7 @@ typedef struct Node_t {
 
 	bool isInfected;
 	bool isRecovered;
+	bool isVaccinated;
 	int roundInfected;
 
 } Node;
