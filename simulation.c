@@ -93,15 +93,15 @@ bool checkRecovery(Node *node, int round) {
 
 
 void countNodes(int t, int *numInfected, int *numRecovered, int *numSusceptible) {
-    int i = 0;
-    numInfected[t], numRecovered[t], numSusceptible[t] = 0;
-    for (i = 0; i <= highestNode; i++) {
-        if(graph[i] != NULL) {
-            if(graph[i]->isInfected) (numInfected[t])++;
-            else if(graph[i]->isRecovered) (numRecovered[t])++;
-            else (numSusceptible[t])++;
-        }
-    }
+	int i = 0;
+	numInfected[t], numRecovered[t], numSusceptible[t] = 0;
+	for (i = 0; i <= highestNode; i++) {
+		if(graph[i] != NULL) {
+			if(graph[i]->isInfected) (numInfected[t])++;
+			else if(graph[i]->isRecovered) (numRecovered[t])++;
+			else (numSusceptible[t])++;
+		}
+	}
 }
 
 /*int numberInfected() {
@@ -196,23 +196,23 @@ void runSimulation(char *graphName) {
 				infectionsThisRound += infectNeighbors(graph[j], i);
 		}
 		
-        countNodes(i, totalInfectious, totalRecovered, totalSusceptible);
+		countNodes(i, totalInfectious, totalRecovered, totalSusceptible);
 
-		newInfectious[i]    = infectionsThisRound;
-		totalInfections    += infectionsThisRound;
+		newInfectious[i]	= infectionsThisRound;
+		totalInfections	+= infectionsThisRound;
 		//totalInfectious[i]  = numberInfected();
 		numRecovered 	   += recoveredThisRound;
 		//totalRecovered[i]   = numberRecovered();
 		//totalSusceptible[i] = numberSusceptible();
 
-        bool allSusceptible = (totalSusceptible[i] == highestNode);
-        bool allInfectious  = (totalInfectious[i]  == highestNode);
-        bool allRecovered   = (totalRecovered[i]   == highestNode);
+		bool allSusceptible = (totalSusceptible[i] == highestNode);
+		bool allInfectious  = (totalInfectious[i]  == highestNode);
+		bool allRecovered   = (totalRecovered[i]   == highestNode);
 
 		if (allRecovered)
 			break;
-        if (totalInfectious[i] == 0 && totalInfections > 0) // stop if no disease left
-            break;
+		if (totalInfectious[i] == 0 && totalInfections > 0) // stop if no disease left
+			break;
 		else if (allInfectious)
 			infectedRound = i;
 	}
