@@ -6,5 +6,8 @@ CFLAGS=-fopenmp -D PARALLEL -lm -g
 all: $(SOURCES)
 	$(CC) $(SOURCES) -fopenmp -lm -g -o ReadGraph
 
+serial: graph_serial.o simulation.o
+	$(CC) graph_serial.o simulation.o -lm -g -o SerialReadGraph
+
 clean:
-	rm *.o ReadGraph
+	rm -f *.o ReadGraph SerialReadGraph

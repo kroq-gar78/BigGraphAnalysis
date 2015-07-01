@@ -78,7 +78,7 @@ void degreeStats() {
 
 	printf("Highest degree:  %8d (#%d)\n", highestDegree, higestDegNum);
 	printf("Lowest degree:   %8d (#%d)\n", lowestDegree, lowestDegNum);
-	printf("Average degree:  %8d\n", averageDegree);
+	printf("Average degree:  %8d\n", (int)averageDegree);
 }
 
 void graphStats() {

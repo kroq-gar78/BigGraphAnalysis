@@ -91,23 +91,24 @@ void writeDegreeDistribution(int higestDegNum, int lowestDegNum,
 
 	printf("Writing degree distribution data...\n");
 
-	int *distribuion = (int *)malloc(sizeof(int)*higestDegNum+1);
+	int *distribution = (int *)malloc(sizeof(int)*higestDegNum+1);
 	int chunk = higestDegNum / 10;
+	if(higestDegNum < 10) chunk = 1;
 	int i;
 
-#pragma omp parallel shared(higestDegNum, distribuion, chunk), private(i)
+#pragma omp parallel shared(higestDegNum, distribution, chunk), private(i)
 {
 	#pragma omp for schedule(dynamic,chunk) nowait
 	for (i = 0; i <= higestDegNum; i++)
-		distribuion[i] = 0;
+		distribution[i] = 0;
 
 	#pragma omp for schedule(dynamic, chunk)
-	for (i = 0; i < highestNode; i++) {
+	for (i = 0; i <= highestNode; i++) {
 		int degree = countDegree(graph[i]);
 
 		if (degree > 0) {
 			#pragma omp atomic
-			distribuion[degree] += 1;
+			distribution[degree] += 1;
 		}
 	}
 }
@@ -123,7 +124,7 @@ void writeDegreeDistribution(int higestDegNum, int lowestDegNum,
 #pragma omp parallel shared(variance, avgDegree), private(i)
 {
 	#pragma omp for reduction(+: variance)
-	for (i = 0; i < highestNode; i++) {
+	for (i = 0; i <= highestNode; i++) {
 		int degree = countDegree(graph[i]);
 		int val = degree - avgDegree;
 		val *= val;
@@ -146,18 +147,18 @@ void writeDegreeDistribution(int higestDegNum, int lowestDegNum,
 	fprintf(f, "\t\"values\": [\n");
 
 	for (i = 0; i <= higestDegNum; i++) {
-		if (i > 0 && distribuion[i] == 0) {
+		if (i > 0 && distribution[i] == 0) {
 			continue;
 		}
 
-		fprintf(f, "\t\t{\"x\": %d, \"y\": %d},\n", i, distribuion[i]);
+		fprintf(f, "\t\t{\"x\": %d, \"y\": %d},\n", i, distribution[i]);
 	}
 
 	fprintf(f, "\t]\n");
 	fprintf(f, "}\n");
 
 	fclose(f);
-	free(distribuion);
+	free(distribution);
 
 	printf("Data written as \"web/data.js\"\n");
 
@@ -172,12 +173,13 @@ void degreeStats(char *filename) {
 
 	// parallel
 	int chunk = highestNode / 10;
+	if(highestNode < 10) chunk = 1;
 
 #pragma omp parallel shared(lowestDegree, highestDegree, degree, chunk, higestDegNum, lowestDegNum), private(i)
 {
 
 	#pragma omp for schedule(dynamic,chunk) nowait
-	for (i = 0; i < highestNode; i++) {
+	for (i = 0; i <= highestNode; i++) {
 		if (graph[i] != NULL) {
 			degree = countDegree(graph[i]);
 
@@ -214,7 +216,7 @@ void graphStats(char *filename) {
 
 void printGraph() {
 	int i;
-	for (i = 0; i < highestNode; i++) {
+	for (i = 0; i <= highestNode; i++) {
 		if (graph[i] != NULL) {
 			printf("%d", i);
 
