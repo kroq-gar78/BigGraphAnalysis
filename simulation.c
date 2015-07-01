@@ -4,7 +4,7 @@
 int infectiousPeriod;
 float contactChance;
 
-bool allInfected() {
+/*bool allInfected() {
 	bool isAllInfected = true;
 
 	int i;
@@ -16,9 +16,9 @@ bool allInfected() {
 	}
 
 	return isAllInfected;
-}
+}*/
 
-bool allRecovered() {
+/*bool allRecovered() {
 	bool isAllRecovered = true;
 
 	int i;
@@ -30,7 +30,7 @@ bool allRecovered() {
 	}
 
 	return isAllRecovered;
-}
+}*/
 
 int seedInfection() {
 	/*int patientZero = rand() % highestNode;*/
@@ -92,7 +92,20 @@ bool checkRecovery(Node *node, int round) {
 	return false;
 }
 
-int numberInfected() {
+
+void countNodes(int t, int *numInfected, int *numRecovered, int *numSusceptible) {
+	int i = 0;
+	numInfected[t], numRecovered[t], numSusceptible[t] = 0;
+	for (i = 0; i <= highestNode; i++) {
+		if(graph[i] != NULL) {
+			if(graph[i]->isInfected) (numInfected[t])++;
+			else if(graph[i]->isRecovered) (numRecovered[t])++;
+			else (numSusceptible[t])++;
+		}
+	}
+}
+
+/*int numberInfected() {
 	int i, numInfected = 0;
 	for (i = 0; i <= highestNode; i++) {
 		if (graph[i] != NULL && graph[i]->isInfected)
@@ -120,7 +133,7 @@ int numberSusceptible() {
 	}
 
 	return numSusceptible;
-}
+}*/
 
 void drawProgressBar(int i, int simulDuration) {
 	int j, numberBars = i / simulDuration;
@@ -187,18 +200,24 @@ void runSimulation(char *graphName) {
 				infectionsThisRound += infectNeighbors(graph[j], i);
 		}
 		
-		newInfectious[i]    = infectionsThisRound;
-		totalInfections    += infectionsThisRound;
-		totalInfectious[i]  = numberInfected();
-		numRecovered 	   += recoveredThisRound;
-		totalRecovered[i]   = numberRecovered();
-		totalSusceptible[i] = numberSusceptible();
+		countNodes(i, totalInfectious, totalRecovered, totalSusceptible);
 
-		if (allRecovered())
+		newInfectious[i]	= infectionsThisRound;
+		totalInfections	+= infectionsThisRound;
+		//totalInfectious[i]  = numberInfected();
+		numRecovered 	   += recoveredThisRound;
+		//totalRecovered[i]   = numberRecovered();
+		//totalSusceptible[i] = numberSusceptible();
+
+		bool allSusceptible = (totalSusceptible[i] == highestNode);
+		bool allInfectious  = (totalInfectious[i]  == highestNode);
+		bool allRecovered   = (totalRecovered[i]   == highestNode);
+
+		if (allRecovered)
 			break;
-        if (numRecovered == totalInfections && totalInfections > 0)
-            break;
-		else if (allInfected())
+		if (totalInfectious[i] == 0 && totalInfections > 0) // stop if no disease left
+			break;
+		else if (allInfectious)
 			infectedRound = i;
 	}
 
