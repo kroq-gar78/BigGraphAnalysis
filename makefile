@@ -7,7 +7,7 @@ all: $(SOURCES)
 	$(CC) $(SOURCES) -fopenmp -lm -g -o ReadGraph
 
 serial: graph_serial.o simulation.o
-	$(CC) graph_serial.o simulation.o -lm -g -o ReadGraph_serial
+	$(CC) graph_serial.o simulation.o -lm -g -o SerialReadGraph
 
 clean:
 	rm -f *.o ReadGraph SerialReadGraph
