@@ -93,6 +93,7 @@ void writeDegreeDistribution(int higestDegNum, int lowestDegNum,
 
 	int *distribution = (int *)malloc(sizeof(int)*higestDegNum+1);
 	int chunk = higestDegNum / 10;
+    if(higestDegNum < 10) chunk = 1;
 	int i;
 
 #pragma omp parallel shared(higestDegNum, distribution, chunk), private(i)
@@ -172,6 +173,7 @@ void degreeStats(char *filename) {
 
 	// parallel
 	int chunk = highestNode / 10;
+    if(highestNode < 10) chunk = 1;
 
 #pragma omp parallel shared(lowestDegree, highestDegree, degree, chunk, higestDegNum, lowestDegNum), private(i)
 {
