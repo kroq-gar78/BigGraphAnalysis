@@ -45,6 +45,7 @@ void connectNode(int src, int dest) {
 
 		newNode = createNode(dest);
 		temp->next = newNode;
+        cs_entry(adj, src, dest, 1.0);
 	}
 
 	if (graph[dest] == NULL) {
@@ -60,6 +61,7 @@ void connectNode(int src, int dest) {
 
 		newNode = createNode(src);
 		temp->next = newNode;
+        cs_entry(adj, dest, src, 1.0);
 	}
 
 	edgeCount++;
@@ -267,7 +269,12 @@ int main(int argc, char const *argv[]) {
 
 	}
 
-	graph = (Node **)malloc(sizeof(Node *)*highestNode+1);
+	graph = (Node **)malloc(sizeof(Node *)*(highestNode+1));
+    /*bool (*adj)[highestNode+1] = malloc((highestNode+1)*sizeof(bool));*/
+
+    // use csparse for sparse matrix
+    adj = cs_spalloc(highestNode+1, highestNode+1, (highestNode+1)*(10+1), // assuming average degree 10 
+            1 , 1);
 
 	rewind(f);
 
@@ -295,6 +302,10 @@ int main(int argc, char const *argv[]) {
 	} else {
 		tok = strtok((char *)argv[1], ".");
 	}
+
+    /*cs_print(cs_multiply(adj,adj), 0);*/
+    /*cs *mul = cs_multiply(adj,adj);*/
+    cs_print(adj, 0);
 
 	char choice = 'z';
 	printf("[a]nalyze graph or [r]un simulation: ");
