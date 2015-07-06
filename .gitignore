@@ -1,6 +1,7 @@
 ReadGraph
 SerialReadGraph
 RingGenerate
+csparse_test
 a.out
 Graph_Xcode
 *.o
