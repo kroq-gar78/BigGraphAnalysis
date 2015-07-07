@@ -3,34 +3,7 @@
 
 int infectiousPeriod;
 float contactChance;
-
-/*bool allInfected() {
-	bool isAllInfected = true;
-
-	int i;
-	for (i = 0; i <= highestNode; i++) {
-		if (graph[i] != NULL && !graph[i]->isInfected) {
-			isAllInfected = false;
-			break;
-		}
-	}
-
-	return isAllInfected;
-}*/
-
-/*bool allRecovered() {
-	bool isAllRecovered = true;
-
-	int i;
-	for (i = 0; i <= highestNode; i++) {
-		if (graph[i] != NULL && !graph[i]->isRecovered) {
-			isAllRecovered = false;
-			break;
-		}
-	}
-
-	return isAllRecovered;
-}*/
+int kVal;
 
 int seedInfection() {
 	int patientZero = rand() % highestNode;
@@ -42,7 +15,7 @@ int seedInfection() {
 }
 
 int infectNeighbors(Node *node, int round) {
-	if (round == node->roundInfected) {
+	if (round == node->roundInfected && node->roundInfected != 0) {
 		// can't infect in the same round we got infected
 		return 0;
 	}
@@ -70,6 +43,10 @@ int infectNeighbors(Node *node, int round) {
 				graph[temp->vertexNum]->isInfected = true;
 				graph[temp->vertexNum]->roundInfected = round;
 				newInfectious++;
+
+				if (newInfectious >= kVal) {
+					break; // Can only infect kVal per round
+				}
 			}
 		}
 
@@ -82,7 +59,7 @@ int infectNeighbors(Node *node, int round) {
 bool checkRecovery(Node *node, int round) {
 	if (node == NULL || !node->isInfected) return false;
 
-	if (round - node->roundInfected >= infectiousPeriod) {
+	if (round - (node->roundInfected+1) >= infectiousPeriod) {
 		node->isInfected = false;
 		node->isRecovered = true;
 		return true;
@@ -104,50 +81,6 @@ void countNodes(int t, int *numInfected, int *numRecovered, int *numSusceptible)
 	}
 }
 
-/*int numberInfected() {
-	int i, numInfected = 0;
-	for (i = 0; i <= highestNode; i++) {
-		if (graph[i] != NULL && graph[i]->isInfected)
-			numInfected++;
-	}
-
-	return numInfected;
-}
-
-int numberRecovered() {
-	int i, numRecovered = 0;
-	for (i = 0; i <= highestNode; i++) {
-		if (graph[i] != NULL && graph[i]->isRecovered)
-			numRecovered++;
-	}
-
-	return numRecovered;
-}
-
-int numberSusceptible() {
-	int i, numSusceptible = 0;
-	for (i = 0; i <= highestNode; i++) {
-		if (graph[i] != NULL && !graph[i]->isInfected && !graph[i]->isRecovered)
-			numSusceptible++;
-	}
-
-	return numSusceptible;
-}*/
-
-void drawProgressBar(int i, int simulDuration) {
-	int j, numberBars = i / simulDuration;
-
-	printf("\r[");
-	for (j = 0; j < 100; j++) {
-		if (j <= numberBars)
-			printf("#");
-		else
-			printf(" ");
-	}
-	printf("]");
-	//fflush(stdout);
-}
-
 void runSimulation(char *graphName) {
 	srand(time(NULL));
 
@@ -156,6 +89,12 @@ void runSimulation(char *graphName) {
 
 	printf("Enter the probability of contact between agents: ");
 	scanf("%f", &contactChance);
+
+	printf("Enter k value (Max # a node may infect per round, 0 for no limit): ");
+	scanf("%d", &kVal);
+
+	if (kVal == 0)
+		kVal = highestNode;
 
 	if (infectiousProbability > 1.0 || infectiousProbability < 0.0) {
 		fprintf(stderr, "Invalid Probability entered. Use a number between 0 and 1\n");
@@ -180,7 +119,6 @@ void runSimulation(char *graphName) {
 
 	int i, j, zero, totalInfections = 0, numRecovered = 0, infectedRound = -1;
 	for (i = 0; i < simulDuration; i++) {
-		//drawProgressBar(i, simulDuration);
 		printf("\rPeforming timestep %d", i);
 		if (i == 0)
 			zero = seedInfection();
@@ -198,12 +136,9 @@ void runSimulation(char *graphName) {
 		
 		countNodes(i, totalInfectious, totalRecovered, totalSusceptible);
 
-		newInfectious[i]	= infectionsThisRound;
+		newInfectious[i] = infectionsThisRound;
 		totalInfections	+= infectionsThisRound;
-		//totalInfectious[i]  = numberInfected();
-		numRecovered 	   += recoveredThisRound;
-		//totalRecovered[i]   = numberRecovered();
-		//totalSusceptible[i] = numberSusceptible();
+		numRecovered 	+= recoveredThisRound;
 
 		bool allSusceptible = (totalSusceptible[i] == highestNode);
 		bool allInfectious  = (totalInfectious[i]  == highestNode);
