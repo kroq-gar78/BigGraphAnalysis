@@ -305,7 +305,7 @@ int main(int argc, char const *argv[]) {
 
     /*cs_print(cs_multiply(adj,adj), 0);*/
     /*cs *mul = cs_multiply(adj,adj);*/
-    cs_print(adj, 0);
+    cs_print(adj, 1);
 
 	char choice = 'z';
 	printf("[a]nalyze graph or [r]un simulation: ");
