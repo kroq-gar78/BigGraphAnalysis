@@ -9,8 +9,8 @@ all: $(SOURCES)
 serial: graph_serial.o simulation.o
 	$(CC) graph_serial.o simulation.o -lm -g -o SerialReadGraph
 
-tests: graph.o graph_check.o
-	$(CC) graph.o graph_check.o $(CFLAGS) -lcheck -o tests
+tests: graph.o simulation.o graph_check.o
+	$(CC) graph.o simulation.o graph_check.o $(CFLAGS) -lcheck -o tests
 	./tests
 	rm tests
 
