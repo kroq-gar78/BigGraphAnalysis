@@ -1,4 +1,4 @@
-SOURCES := graph.o simulation.o csparse.o
+SOURCES := main.o graph.o simulation.o csparse.o
 
 CC=gcc
 CFLAGS=-fopenmp -D PARALLEL -lm -g
@@ -9,5 +9,10 @@ all: $(SOURCES)
 serial: graph_serial.o simulation.o
 	$(CC) graph_serial.o simulation.o -lm -g -o SerialReadGraph
 
+tests: $(SOURCES) graph_check.o
+	$(CC) graph.o simulation.o graph_check.o $(CFLAGS) -lcheck -o tests
+	./tests
+	rm tests
+
 clean:
-	rm -f *.o ReadGraph SerialReadGraph
+	rm -f *.o ReadGraph SerialReadGraph tests

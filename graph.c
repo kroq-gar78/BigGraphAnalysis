@@ -13,6 +13,7 @@ Node *createNode(int vertexNum) {
 	newNode->isRecovered = false;
 	newNode->isVaccinated = false;
 	newNode->roundInfected = -1;
+	newNode->next = NULL;
 	
 	return newNode;
 }
@@ -234,18 +235,8 @@ void printGraph() {
 	}
 }
 
-int main(int argc, char const *argv[]) {
-	
-	if (argc != 2) {
-		fprintf(stderr, "Usage: %s <graphFile>\n", argv[0]);
-		fprintf(stderr, "<graphFile>: Name of graph to test\n");
-		exit(1);
-	}
-
-	clock_t t1, t2;
-	t1 = clock();
-
-	FILE *f = fopen(argv[1], "r");
+void readGraph(const char *filename) {
+	FILE *f = fopen(filename, "r");
 
 	if (!f) {
 		fprintf(stderr, "Could not open file\n");
@@ -270,6 +261,7 @@ int main(int argc, char const *argv[]) {
 	}
 
 	graph = (Node **)malloc(sizeof(Node *)*(highestNode+1));
+	memset(graph, 0, sizeof(Node *)*highestNode+1);
     /*bool (*adj)[highestNode+1] = malloc((highestNode+1)*sizeof(bool));*/
 
     // use csparse for sparse matrix
@@ -288,42 +280,4 @@ int main(int argc, char const *argv[]) {
 	}
 
 	fclose(f);
-
-	t1 = clock() - t1; // Done reading
-	t2 = clock();
-
-	char *temp = (char *)malloc(strlen(argv[1])+1);
-	strcpy(temp, argv[1]);
-
-	char *tok = strtok(temp, "/");
-
-	if ((tok = strtok(NULL, "/")) != NULL) {
-		tok = strtok(tok, ".");
-	} else {
-		tok = strtok((char *)argv[1], ".");
-	}
-
-    /*cs_print(cs_multiply(adj,adj), 0);*/
-    /*cs *mul = cs_multiply(adj,adj);*/
-    cs_print(adj, 1);
-
-	char choice = 'z';
-	printf("[a]nalyze graph or [r]un simulation: ");
-	scanf("%c", &choice);
-
-	if (choice == 'a')
-		graphStats(tok);
-	else
-		runSimulation(tok);
-
-	free(temp);
-	free(graph);
-
-	t2 = clock() - t2; // Done processing
-
-	printf("\nGraph Read Runtime: %lu clicks (%.3f seconds)\n", t1, (((float)t1)/CLOCKS_PER_SEC));
-	printf("Graph Process Runtime: %lu clicks (%.3f seconds)\n", t2, (((float)t2)/CLOCKS_PER_SEC));
-	printf("Total Runtime: %lu clicks (%.3f seconds)\n", t1+t2, (((float)t1+t2)/CLOCKS_PER_SEC));
-
-	return 0;
 }

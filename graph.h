@@ -36,4 +36,8 @@ int edgeCount;
 //bool *adj; // adjacency matrix; use non-zero initial size
 cs *adj;
 
+void readGraph(const char *filename);
+int countDegree(Node *node);
+bool checkConnection(Node *srcNode, int dest);
+
 #endif
