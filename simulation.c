@@ -158,7 +158,7 @@ void runSimulation(char *graphName) {
 			zero = seedInfection();
 
 		int infectionsThisRound = 0, recoveredThisRound = 0;
-		for (j = 0; j < highestNode; j++) {
+		for (j = 0; j <= highestNode; j++) {
 			if (graph[j] != NULL && graph[j]->isRecovered) continue;
 
 			if (checkRecovery(graph[j], i))
