@@ -5,6 +5,8 @@ int infectiousPeriod;
 float contactChance;
 int kVal;
 
+char type;
+
 int seedInfection() {
 	int patientZero = rand() % highestNode;
 
@@ -15,9 +17,14 @@ int seedInfection() {
 }
 
 int infectNeighbors(Node *node, int round) {
-	if (round == node->roundInfected && node->roundInfected != 0) {
+	if (round == node->roundInfected /*&& node->roundInfected != 0*/) {
 		// can't infect in the same round we got infected
 		return 0;
+	}
+
+	if (type == 'a') {
+		if (round - (node->roundInfected+1) >= infectiousPeriod)
+			return 0;	
 	}
 
 	Node *temp = node->next;
@@ -38,6 +45,11 @@ int infectNeighbors(Node *node, int round) {
 			float chance = (float)(rand() % 100) / 100;
 
 			if (chance < infectiousProbability) {
+				if (round == graph[temp->vertexNum]->roundRecovered) {
+					temp = temp->next;
+					continue;
+				}
+
 				temp->isInfected = true;
 				temp->roundInfected = round;
 				graph[temp->vertexNum]->isInfected = true;
@@ -57,12 +69,18 @@ int infectNeighbors(Node *node, int round) {
 }
 
 bool checkRecovery(Node *node, int round) {
-	if (node == NULL || !node->isInfected) return false;
+	if (node == NULL || !node->isInfected || type == 'a') return false;
 
 	if (round - (node->roundInfected+1) >= infectiousPeriod) {
 		node->isInfected = false;
-		node->isRecovered = true;
-		return true;
+		if (type == 'n') {
+			node->isRecovered = true;
+			return true;
+		} else if (type == 'r') {
+			node->isRecovered = false;
+			node->roundRecovered = round;
+			return false;
+		}
 	}
 
 	return false;
@@ -83,6 +101,11 @@ void countNodes(int t, int *numInfected, int *numRecovered, int *numSusceptible)
 
 void runSimulation(char *graphName) {
 	srand(time(NULL));
+
+	fflush(stdin);
+
+	printf("Select simulation: [n]ormal, [a]ccumulative, or [r]einfect: ");
+	scanf(" %c", &type);
 
 	printf("Enter the probability of an agent to become Infections: ");
 	scanf("%f", &infectiousProbability);
@@ -112,6 +135,11 @@ void runSimulation(char *graphName) {
 	int *totalInfectious = (int *)malloc(sizeof(int)*simulDuration);
 	int *totalRecovered = (int *)malloc(sizeof(int)*simulDuration);
 	int *totalSusceptible = (int *)malloc(sizeof(int)*simulDuration);
+
+	memset(newInfectious,    0, sizeof(int)*simulDuration);
+	memset(totalInfectious,  0, sizeof(int)*simulDuration);
+	memset(totalRecovered,   0, sizeof(int)*simulDuration);
+	memset(totalSusceptible, 0, sizeof(int)*simulDuration);
 
 	printf("\n");
 
@@ -180,6 +208,7 @@ void runSimulation(char *graphName) {
 	fprintf(output, "\t\"infectionChance\": %f,\n", infectiousProbability);
 	fprintf(output, "\t\"contactChance\": %f,\n", contactChance);
 	fprintf(output, "\t\"infectionPeriod\": %d,\n", infectiousPeriod);
+	fprintf(output, "\t\"kVal\": %d,\n", kVal);
 
 	if (isAllInfected) {
 		fprintf(output, "\t\"endStep\": %d,\n", infectedRound);

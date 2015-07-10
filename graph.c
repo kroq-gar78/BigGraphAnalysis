@@ -12,6 +12,7 @@ Node *createNode(int vertexNum) {
 	newNode->isInfected = false;
 	newNode->isRecovered = false;
 	newNode->roundInfected = -1;
+	newNode->roundRecovered = -1;
 	newNode->next = NULL;
 	
 	return newNode;
