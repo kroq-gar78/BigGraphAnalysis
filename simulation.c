@@ -70,13 +70,15 @@ bool checkRecovery(Node *node, int round) {
 }
 
 
-void countNodes(int t, int *numInfected, int *numRecovered, int *numSusceptible) {
+void countNodes(int t, int *numInfected, int *numRecovered, int *numSusceptible, int *numVaccinated) {
 	int i = 0;
 	numInfected[t], numRecovered[t], numSusceptible[t] = 0;
+    *numVaccinated = 0;
 	for (i = 0; i <= highestNode; i++) {
 		if(graph[i] != NULL) {
 			if(graph[i]->isInfected) (numInfected[t])++;
 			else if(graph[i]->isRecovered) (numRecovered[t])++;
+            else if(graph[i]->isVaccinated) (*numVaccinated)++;
 			else (numSusceptible[t])++;
 		}
 	}
@@ -113,6 +115,7 @@ void runSimulation(char *graphName) {
 	int *totalInfectious = (int *)malloc(sizeof(int)*simulDuration);
 	int *totalRecovered = (int *)malloc(sizeof(int)*simulDuration);
 	int *totalSusceptible = (int *)malloc(sizeof(int)*simulDuration);
+    int *numVaccinated = (int *)malloc(sizeof(int));
 
 	printf("\n");
 
@@ -123,8 +126,8 @@ void runSimulation(char *graphName) {
 		printf("\rPeforming timestep %d", i);
 		if (i == 0)
 			zero = seedInfection();
-            graph[500]->isVaccinated = true;
-            graph[100000-500]->isVaccinated = true;
+            /*graph[500]->isVaccinated = true;
+            graph[100000-500]->isVaccinated = true;*/
 
 
 		int infectionsThisRound = 0, recoveredThisRound = 0;
@@ -138,7 +141,7 @@ void runSimulation(char *graphName) {
 				infectionsThisRound += infectNeighbors(graph[j], i);
 		}
 		
-		countNodes(i, totalInfectious, totalRecovered, totalSusceptible);
+		countNodes(i, totalInfectious, totalRecovered, totalSusceptible, numVaccinated);
 
 		newInfectious[i] = infectionsThisRound;
 		totalInfections	+= infectionsThisRound;
@@ -178,6 +181,7 @@ void runSimulation(char *graphName) {
 	fprintf(output, "\t\"name\": \"%s\",\n", graphName);
 	fprintf(output, "\t\"nodeCount\": %d,\n", highestNode);
 	fprintf(output, "\t\"edgeCount\": %d,\n", edgeCount);
+    fprintf(output, "\t\"numVaccinated\": %d,\n", *numVaccinated);
 	fprintf(output, "\t\"infectionCount\": %d,\n", totalInfections);
 	fprintf(output, "\t\"patientZero\": %d,\n", zero);
 	fprintf(output, "\t\"simulDuration\": %d,\n", simulDuration);
