@@ -167,7 +167,7 @@ void writeDegreeDistribution(int higestDegNum, int lowestDegNum,
 }
 
 void degreeStats(char *filename) {
-	long averageDegree = 0;
+	double averageDegree = 0;
 	int lowestDegree = INT_MAX, highestDegree = 0, degree;
 	int i;
 
@@ -177,7 +177,7 @@ void degreeStats(char *filename) {
 	int chunk = highestNode / 10;
 	if(highestNode < 10) chunk = 1;
 
-#pragma omp parallel shared(lowestDegree, highestDegree, degree, chunk, higestDegNum, lowestDegNum), private(i)
+#pragma omp parallel shared(lowestDegree, highestDegree, degree, chunk, higestDegNum, lowestDegNum), private(i), reduction(+:averageDegree)
 {
 
 	#pragma omp for schedule(dynamic,chunk) nowait
@@ -204,7 +204,7 @@ void degreeStats(char *filename) {
 
 	printf("Highest degree:  %8d (#%d)\n", highestDegree, higestDegNum);
 	printf("Lowest degree:   %8d (#%d)\n", lowestDegree, lowestDegNum);
-	printf("Average degree:  %8ld\n", averageDegree);
+	printf("Average degree:  %8f\n", averageDegree);
 
 	writeDegreeDistribution(highestDegree, lowestDegree, averageDegree, filename);
 }

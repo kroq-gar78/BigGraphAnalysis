@@ -104,25 +104,31 @@ void runSimulation(char *graphName) {
 
 	fflush(stdin);
 
+    /**
+     * normal: SIR
+     * accumulative: SI
+     * reinfect: SIS
+     **/
 	printf("Select simulation: [n]ormal, [a]ccumulative, or [r]einfect: ");
 	scanf(" %c", &type);
 
-	printf("Enter the probability of an agent to become Infections: ");
+	printf("Enter the probability of an agent to become infectious: ");
 	scanf("%f", &infectiousProbability);
 
 	printf("Enter the probability of contact between agents: ");
 	scanf("%f", &contactChance);
+
+	if (infectiousProbability > 1.0 || infectiousProbability < 0.0 ||
+        contactChance > 1.0 || contactChance < 0.0) {
+		fprintf(stderr, "Invalid probability entered. Use a number between 0 and 1\n");
+		exit(1);
+	}
 
 	printf("Enter k value (Max # a node may infect per round, 0 for no limit): ");
 	scanf("%d", &kVal);
 
 	if (kVal == 0)
 		kVal = highestNode;
-
-	if (infectiousProbability > 1.0 || infectiousProbability < 0.0) {
-		fprintf(stderr, "Invalid Probability entered. Use a number between 0 and 1\n");
-		exit(1);
-	}
 
 	int simulDuration;
 	printf("How many timesteps for this simulation: ");
@@ -147,7 +153,7 @@ void runSimulation(char *graphName) {
 
 	int i, j, zero, totalInfections = 0, numRecovered = 0, infectedRound = -1;
 	for (i = 0; i < simulDuration; i++) {
-		printf("\rPeforming timestep %d", i);
+		printf("\rPerforming timestep %d", i);
 		if (i == 0)
 			zero = seedInfection();
 
