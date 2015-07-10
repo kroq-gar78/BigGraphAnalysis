@@ -3,7 +3,7 @@
 
 int main(int argc, char const *argv[]) {
 	
-	if (argc != 2) {
+	if (argc < 2 || argc > 3) {
 		fprintf(stderr, "Usage: %s <graphFile>\n", argv[0]);
 		fprintf(stderr, "<graphFile>: Name of graph to test\n");
 		exit(1);
@@ -13,6 +13,7 @@ int main(int argc, char const *argv[]) {
 	t1 = clock();
 
 	readGraph(argv[1]);
+    if (argc >= 3) readVaccinated(argv[2]);
 
 	t1 = clock() - t1; // Done reading
 	t2 = clock();

@@ -281,3 +281,22 @@ void readGraph(const char *filename) {
 
 	fclose(f);
 }
+
+void readVaccinated(const char *filename) {
+    FILE *f = fopen(filename, "r");
+
+    if (!f) {
+        fprintf(stderr, "Could not open vaccination file\n");
+        exit(1);
+    }
+
+    char buffer[256];
+
+    while((fgets(buffer, 256, f)) != NULL) {
+        int nodeNum = atoi(buffer);
+        //printf("%d\n",nodeNum);
+        if (graph[nodeNum] == NULL)
+            fprintf(stderr, "WARNING: Node at %d is NULL\n", nodeNum);
+        else graph[nodeNum]->isVaccinated = true;
+    }
+}

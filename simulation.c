@@ -7,7 +7,8 @@ int kVal;
 
 int seedInfection() {
 	/*int patientZero = rand() % highestNode;*/
-    int patientZero = 1;
+    int patientZero = 6;
+    printf("maxnode: %d\n", highestNode);
 
 	graph[patientZero]->isInfected = true;
 	graph[patientZero]->roundInfected = 0;
@@ -132,7 +133,7 @@ void runSimulation(char *graphName) {
 
 		int infectionsThisRound = 0, recoveredThisRound = 0;
 		for (j = 0; j < highestNode; j++) {
-			if (graph[j] != NULL && graph[j]->isRecovered) continue;
+			if (graph[j] != NULL && (graph[j]->isRecovered || graph[j]->isVaccinated)) continue;
 
 			if (checkRecovery(graph[j], i))
 				recoveredThisRound++;

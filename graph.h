@@ -37,6 +37,7 @@ int edgeCount;
 cs *adj;
 
 void readGraph(const char *filename);
+void readVaccinated(const char *filename);
 int countDegree(Node *node);
 bool checkConnection(Node *srcNode, int dest);
 
