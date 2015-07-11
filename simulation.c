@@ -154,10 +154,13 @@ void runSimulation(char *graphName) {
 	int i, j, zero, totalInfections = 0, numRecovered = 0, infectedRound = -1;
 	for (i = 0; i < simulDuration; i++) {
 		printf("\rPerforming timestep %d", i);
-		if (i == 0)
-			zero = seedInfection();
 
 		int infectionsThisRound = 0, recoveredThisRound = 0;
+		if (i == 0) {
+			zero = seedInfection();
+            infectionsThisRound++; // so that we can get 100% infection instead of 99% 
+        }
+
 		for (j = 0; j <= highestNode; j++) {
 			if (graph[j] != NULL && graph[j]->isRecovered) continue;
 
