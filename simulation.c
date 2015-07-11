@@ -8,7 +8,7 @@ int kVal;
 char type;
 
 int seedInfection() {
-	int patientZero = rand() % highestNode;
+	int patientZero = (rand() % highestNode)+1; // compensate for 1-based indeces
 
 	graph[patientZero]->isInfected = true;
 	graph[patientZero]->roundInfected = 0;
@@ -152,6 +152,7 @@ void runSimulation(char *graphName) {
 	///// SIMULATION /////
 
 	int i, j, zero, totalInfections = 0, numRecovered = 0, infectedRound = -1;
+    bool lastRound = false;
 	for (i = 0; i < simulDuration; i++) {
 		printf("\rPerforming timestep %d", i);
 
@@ -181,11 +182,14 @@ void runSimulation(char *graphName) {
 		bool allInfectious  = (totalInfectious[i]  == highestNode);
 		bool allRecovered   = (totalRecovered[i]   == highestNode);
 
+        if (lastRound)
+            break;
 		if (allRecovered)
-			break;
-		if (totalInfectious[i] == 0 && totalInfections > 0) // stop if no disease left
-			break;
-		else if (allInfectious)
+			lastRound = true; // do an extra round for completeness (otherwise, infectious doesn't really reach 0 in output)
+		if (totalInfectious[i] == 0 && totalInfections > 0) { // stop if no disease left
+            lastRound = true; 
+        }
+		if (allInfectious)
 			infectedRound = i;
 	}
 
