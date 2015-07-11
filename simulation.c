@@ -5,6 +5,8 @@ int infectiousPeriod;
 float contactChance;
 int kVal;
 
+char type;
+
 int seedInfection() {
 	/*int patientZero = rand() % highestNode;*/
     int patientZero = 6;
@@ -17,9 +19,14 @@ int seedInfection() {
 }
 
 int infectNeighbors(Node *node, int round) {
-	if (round == node->roundInfected && node->roundInfected != 0) {
+	if (round == node->roundInfected /*&& node->roundInfected != 0*/) {
 		// can't infect in the same round we got infected
 		return 0;
+	}
+
+	if (type == 'a') {
+		if (round - (node->roundInfected+1) >= infectiousPeriod)
+			return 0;	
 	}
 
 	Node *temp = node->next;
@@ -40,6 +47,11 @@ int infectNeighbors(Node *node, int round) {
 			float chance = (float)(rand() % 100) / 100;
 
 			if (chance < infectiousProbability) {
+				if (round == graph[temp->vertexNum]->roundRecovered) {
+					temp = temp->next;
+					continue;
+				}
+
 				temp->isInfected = true;
 				temp->roundInfected = round;
 				graph[temp->vertexNum]->isInfected = true;
@@ -59,12 +71,18 @@ int infectNeighbors(Node *node, int round) {
 }
 
 bool checkRecovery(Node *node, int round) {
-	if (node == NULL || !node->isInfected) return false;
+	if (node == NULL || !node->isInfected || type == 'a') return false;
 
 	if (round - (node->roundInfected+1) >= infectiousPeriod) {
 		node->isInfected = false;
-		node->isRecovered = true;
-		return true;
+		if (type == 'n') {
+			node->isRecovered = true;
+			return true;
+		} else if (type == 'r') {
+			node->isRecovered = false;
+			node->roundRecovered = round;
+			return false;
+		}
 	}
 
 	return false;
@@ -88,22 +106,33 @@ void countNodes(int t, int *numInfected, int *numRecovered, int *numSusceptible,
 void runSimulation(char *graphName) {
 	srand(time(NULL));
 
-	printf("Enter the probability of an agent to become Infections: ");
+	fflush(stdin);
+
+    /**
+     * normal: SIR
+     * accumulative: SI
+     * reinfect: SIS
+     **/
+	printf("Select simulation: [n]ormal, [a]ccumulative, or [r]einfect: ");
+	scanf(" %c", &type);
+
+	printf("Enter the probability of an agent to become infectious: ");
 	scanf("%f", &infectiousProbability);
 
 	printf("Enter the probability of contact between agents: ");
 	scanf("%f", &contactChance);
+
+	if (infectiousProbability > 1.0 || infectiousProbability < 0.0 ||
+        contactChance > 1.0 || contactChance < 0.0) {
+		fprintf(stderr, "Invalid probability entered. Use a number between 0 and 1\n");
+		exit(1);
+	}
 
 	printf("Enter k value (Max # a node may infect per round, 0 for no limit): ");
 	scanf("%d", &kVal);
 
 	if (kVal == 0)
 		kVal = highestNode;
-
-	if (infectiousProbability > 1.0 || infectiousProbability < 0.0) {
-		fprintf(stderr, "Invalid Probability entered. Use a number between 0 and 1\n");
-		exit(1);
-	}
 
 	int simulDuration;
 	printf("How many timesteps for this simulation: ");
@@ -118,13 +147,18 @@ void runSimulation(char *graphName) {
 	int *totalSusceptible = (int *)malloc(sizeof(int)*simulDuration);
     int *numVaccinated = (int *)malloc(sizeof(int));
 
+	memset(newInfectious,    0, sizeof(int)*simulDuration);
+	memset(totalInfectious,  0, sizeof(int)*simulDuration);
+	memset(totalRecovered,   0, sizeof(int)*simulDuration);
+	memset(totalSusceptible, 0, sizeof(int)*simulDuration);
+
 	printf("\n");
 
 	///// SIMULATION /////
 
 	int i, j, zero, totalInfections = 0, numRecovered = 0, infectedRound = -1;
 	for (i = 0; i < simulDuration; i++) {
-		printf("\rPeforming timestep %d", i);
+		printf("\rPerforming timestep %d", i);
 		if (i == 0)
 			zero = seedInfection();
             /*graph[500]->isVaccinated = true;
@@ -132,7 +166,7 @@ void runSimulation(char *graphName) {
 
 
 		int infectionsThisRound = 0, recoveredThisRound = 0;
-		for (j = 0; j < highestNode; j++) {
+		for (j = 0; j <= highestNode; j++) {
 			if (graph[j] != NULL && (graph[j]->isRecovered || graph[j]->isVaccinated)) continue;
 
 			if (checkRecovery(graph[j], i))
@@ -189,6 +223,7 @@ void runSimulation(char *graphName) {
 	fprintf(output, "\t\"infectionChance\": %f,\n", infectiousProbability);
 	fprintf(output, "\t\"contactChance\": %f,\n", contactChance);
 	fprintf(output, "\t\"infectionPeriod\": %d,\n", infectiousPeriod);
+	fprintf(output, "\t\"kVal\": %d,\n", kVal);
 
 	if (isAllInfected) {
 		fprintf(output, "\t\"endStep\": %d,\n", infectedRound);

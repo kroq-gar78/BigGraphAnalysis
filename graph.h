@@ -24,6 +24,7 @@ typedef struct Node_t {
 	bool isRecovered;
 	bool isVaccinated;
 	int roundInfected;
+	int roundRecovered;
 
 } Node;
 
