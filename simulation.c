@@ -193,6 +193,8 @@ void runSimulation(char *graphName) {
 			infectedRound = i;
 	}
 
+    int roundsNeeded = i;
+
 	///// END SIMULATION /////
 
 	printf("\n======== Simulation Results ========\n");
@@ -218,6 +220,7 @@ void runSimulation(char *graphName) {
 	fprintf(output, "\t\"infectionCount\": %d,\n", totalInfections);
 	fprintf(output, "\t\"patientZero\": %d,\n", zero);
 	fprintf(output, "\t\"simulDuration\": %d,\n", simulDuration);
+    fprintf(output, "\t\"roundsNeeded\": %d,\n", roundsNeeded);
 	fprintf(output, "\t\"infectionChance\": %f,\n", infectiousProbability);
 	fprintf(output, "\t\"contactChance\": %f,\n", contactChance);
 	fprintf(output, "\t\"infectionPeriod\": %d,\n", infectiousPeriod);
