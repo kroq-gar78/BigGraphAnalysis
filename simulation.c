@@ -186,7 +186,7 @@ void runSimulation(char *graphName) {
             break;
 		if (allRecovered)
 			lastRound = true; // do an extra round for completeness (otherwise, infectious doesn't really reach 0 in output)
-		if (totalInfectious[i] == 0 && totalInfections > 0) { // stop if no disease left
+		if (totalInfectious[i] == 0) { // stop if no disease left
             lastRound = true; 
         }
 		if (allInfectious)
