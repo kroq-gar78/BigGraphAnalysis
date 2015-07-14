@@ -33,6 +33,7 @@ Node **graph;
 float infectiousProbability;
 int highestNode;
 int edgeCount;
+int *numVaccinated;
 
 //bool *adj; // adjacency matrix; use non-zero initial size
 cs *adj;

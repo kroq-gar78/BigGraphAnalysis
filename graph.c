@@ -292,12 +292,17 @@ void readVaccinated(const char *filename) {
     }
 
     char buffer[256];
+    numVaccinated = (int *)malloc(sizeof(int));
+    *numVaccinated = 0;
 
     while((fgets(buffer, 256, f)) != NULL) {
         int nodeNum = atoi(buffer);
         //printf("%d\n",nodeNum);
         if (graph[nodeNum] == NULL)
             fprintf(stderr, "WARNING: Node at %d is NULL\n", nodeNum);
-        else graph[nodeNum]->isVaccinated = true;
+        else {
+            graph[nodeNum]->isVaccinated = true;
+            (*numVaccinated)++;
+        }
     }
 }

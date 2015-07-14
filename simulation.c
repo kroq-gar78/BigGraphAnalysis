@@ -7,10 +7,18 @@ int kVal;
 
 char type;
 
+// infect the first susceptible node
 int seedInfection() {
-    int patientZero = (rand() % highestNode)+1; // compensate for 1-based indeces
+    int patientZero = (rand() % (highestNode-*numVaccinated)); // index of random susceptible node
     /*int patientZero = 6;*/
-    printf("maxnode: %d\n", highestNode);
+    int i, curr = 0;
+    for(i = 1; i < highestNode; i++) {
+       if(graph[i] != NULL && !graph[i]->isVaccinated) {
+           if(curr++ == patientZero)
+               patientZero = i;
+       }
+    }
+    printf("numVaccinated: %d\n", *numVaccinated);
 
 	graph[patientZero]->isInfected = true;
 	graph[patientZero]->roundInfected = 0;
