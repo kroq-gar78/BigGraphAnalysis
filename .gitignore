@@ -5,6 +5,7 @@ a.out
 Graph_Xcode
 *.o
 *.pyc
+.ropeproject
 web/data.js
 web/infData.js
 results.txt
