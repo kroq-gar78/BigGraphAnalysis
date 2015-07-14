@@ -8,8 +8,8 @@ int kVal;
 char type;
 
 int seedInfection() {
-	/*int patientZero = rand() % highestNode;*/
-    int patientZero = 6;
+    int patientZero = (rand() % highestNode)+1; // compensate for 1-based indeces
+    /*int patientZero = 6;*/
     printf("maxnode: %d\n", highestNode);
 
 	graph[patientZero]->isInfected = true;
@@ -157,15 +157,16 @@ void runSimulation(char *graphName) {
 	///// SIMULATION /////
 
 	int i, j, zero, totalInfections = 0, numRecovered = 0, infectedRound = -1;
+    bool lastRound = false;
 	for (i = 0; i < simulDuration; i++) {
 		printf("\rPerforming timestep %d", i);
-		if (i == 0)
-			zero = seedInfection();
-            /*graph[500]->isVaccinated = true;
-            graph[100000-500]->isVaccinated = true;*/
-
 
 		int infectionsThisRound = 0, recoveredThisRound = 0;
+		if (i == 0) {
+			zero = seedInfection();
+            infectionsThisRound++; // so that we can get 100% infection instead of 99% 
+        }
+
 		for (j = 0; j <= highestNode; j++) {
 			if (graph[j] != NULL && (graph[j]->isRecovered || graph[j]->isVaccinated)) continue;
 
@@ -186,13 +187,18 @@ void runSimulation(char *graphName) {
 		bool allInfectious  = (totalInfectious[i]  == highestNode);
 		bool allRecovered   = (totalRecovered[i]   == highestNode);
 
+        if (lastRound)
+            break;
 		if (allRecovered)
-			break;
-		if (totalInfectious[i] == 0 && totalInfections > 0) // stop if no disease left
-			break;
-		else if (allInfectious)
+			lastRound = true; // do an extra round for completeness (otherwise, infectious doesn't really reach 0 in output)
+		if (totalInfectious[i] == 0) { // stop if no disease left
+            lastRound = true; 
+        }
+		if (allInfectious)
 			infectedRound = i;
 	}
+
+    int roundsNeeded = i;
 
 	///// END SIMULATION /////
 
@@ -220,6 +226,7 @@ void runSimulation(char *graphName) {
 	fprintf(output, "\t\"infectionCount\": %d,\n", totalInfections);
 	fprintf(output, "\t\"patientZero\": %d,\n", zero);
 	fprintf(output, "\t\"simulDuration\": %d,\n", simulDuration);
+    fprintf(output, "\t\"roundsNeeded\": %d,\n", roundsNeeded);
 	fprintf(output, "\t\"infectionChance\": %f,\n", infectiousProbability);
 	fprintf(output, "\t\"contactChance\": %f,\n", contactChance);
 	fprintf(output, "\t\"infectionPeriod\": %d,\n", infectiousPeriod);
