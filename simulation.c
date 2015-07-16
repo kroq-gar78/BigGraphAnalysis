@@ -89,14 +89,20 @@ bool checkRecovery(Node *node, int round) {
 
 void countNodes(int t, int *numInfected, int *numRecovered, int *numSusceptible) {
 	int i = 0;
-	numInfected[t], numRecovered[t], numSusceptible[t] = 0;
+    int tmp_infected = 0, tmp_recovered = 0, tmp_susceptible = 0;
+    //#pragma omp parallel for private(i) shared(graph, highestNode) reduction(+:tmp_infected, tmp_recovered, tmp_susceptible) //schedule(dynamic, 100)
+    // might need large chunks for speedup (currently no speedup with parallel)
 	for (i = 0; i <= highestNode; i++) {
 		if(graph[i] != NULL) {
-			if(graph[i]->isInfected) (numInfected[t])++;
-			else if(graph[i]->isRecovered) (numRecovered[t])++;
-			else (numSusceptible[t])++;
+            if(graph[i]->isInfected) tmp_infected++;
+            else if(graph[i]->isRecovered) tmp_recovered++;
+            else tmp_susceptible++;
 		}
 	}
+
+    numInfected[t] = tmp_infected;
+    numRecovered[t] = tmp_recovered;
+    numSusceptible[t] = tmp_susceptible;
 }
 
 void runSimulation(char *graphName) {
