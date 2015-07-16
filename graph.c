@@ -262,7 +262,9 @@ void readGraph(const char *filename) {
 	}
 
 	graph = (Node **)malloc(sizeof(Node *)*(highestNode+1));
+    numVaccinated = (int *)malloc(sizeof(int));
 	memset(graph, 0, sizeof(Node *)*highestNode+1);
+    *numVaccinated = 0;
     /*bool (*adj)[highestNode+1] = malloc((highestNode+1)*sizeof(bool));*/
 
     // use csparse for sparse matrix
@@ -292,8 +294,6 @@ void readVaccinated(const char *filename) {
     }
 
     char buffer[256];
-    numVaccinated = (int *)malloc(sizeof(int));
-    *numVaccinated = 0;
 
     while((fgets(buffer, 256, f)) != NULL) {
         int nodeNum = atoi(buffer);
