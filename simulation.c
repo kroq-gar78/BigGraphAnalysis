@@ -233,28 +233,36 @@ void runSimulation(char *graphName) {
 	// Rate of infection
 	fprintf(output, "\t\"values\": [\n");
 	for (j = 0; j < i; j++) {
-		fprintf(output, "\t\t{\"x\": %d, \"y\": %d},\n", j, newInfectious[j]);
+		fprintf(output, "\t\t{\"x\": %d, \"y\": %d}", j, newInfectious[j]);
+        if(j < i-1) fprintf(output, ",");
+        fprintf(output, "\n");
 	}
 	fprintf(output, "\t],\n");
 
 	// number of infected
 	fprintf(output, "\t\"numInf\": [\n");
 	for (j = 0; j < i; j++) {
-		fprintf(output, "\t\t{\"x\": %d, \"y\": %d},\n", j, totalInfectious[j]);
+		fprintf(output, "\t\t{\"x\": %d, \"y\": %d}", j, totalInfectious[j]);
+        if(j < i-1) fprintf(output, ",");
+        fprintf(output, "\n");
 	}
 	fprintf(output, "\t],\n");
 
 	// number of recovered
 	fprintf(output, "\t\"numRec\": [\n");
 	for (j = 0; j < i; j++) {
-		fprintf(output, "\t\t{\"x\": %d, \"y\": %d},\n", j, totalRecovered[j]);
+		fprintf(output, "\t\t{\"x\": %d, \"y\": %d}", j, totalRecovered[j]);
+        if(j < i-1) fprintf(output, ",");
+        fprintf(output, "\n");
 	}
 	fprintf(output, "\t],\n");
 
 	// number of susceptible
 	fprintf(output, "\t\"numSus\": [\n");
 	for (j = 0; j < i; j++) {
-		fprintf(output, "\t\t{\"x\": %d, \"y\": %d},\n", j, totalSusceptible[j]);
+		fprintf(output, "\t\t{\"x\": %d, \"y\": %d}", j, totalSusceptible[j]);
+        if(j < i-1) fprintf(output, ",");
+        fprintf(output, "\n");
 	}
 	fprintf(output, "\t]\n");
 
