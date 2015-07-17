@@ -11,10 +11,13 @@ def cen_katz(g):
     return katz(g).a
 
 def cen_eigenvector(g):
-    return _,eigenvector(g).a # throw out the largest eigenvalue for now
+    return eigenvector(g)[1].a # throw out the largest eigenvalue for now
 
 def cen_pagerank(g):
     return pagerank(g).a
+
+def cen_eigentrust(g):
+    return eigentrust(g).a
 
 # get the 'n' largest elements and return their indecies
 def nlargest_idx(a, n):
