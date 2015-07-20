@@ -82,12 +82,12 @@ int countDegree(Node *node) {
 	return count;
 }
 
-void writeDegreeDistribution(int higestDegNum, int lowestDegNum, 
+void writeDegreeDistribution(int highestDegNum, int lowestDegNum, 
 	int avgDegree, char *filename) {
 	int numDataPoints = highestNode;
 	int step = 1;
 
-	FILE *f = fopen("web/data.js", "w");
+	FILE *f = fopen("web/data.json", "w");
 
 	if (!f) {
 		fprintf(stderr, "Unable to open output file\n");
@@ -96,15 +96,15 @@ void writeDegreeDistribution(int higestDegNum, int lowestDegNum,
 
 	printf("Writing degree distribution data...\n");
 
-	int *distribution = (int *)malloc(sizeof(int)*higestDegNum+1);
-	int chunk = higestDegNum / 10;
-	if(higestDegNum < 10) chunk = 1;
+	int *distribution = (int *)malloc(sizeof(int)*highestDegNum+1);
+	int chunk = highestDegNum / 10;
+	if(highestDegNum < 10) chunk = 1;
 	int i;
 
-#pragma omp parallel shared(higestDegNum, distribution, chunk), private(i)
+#pragma omp parallel shared(highestDegNum, distribution, chunk), private(i)
 {
 	#pragma omp for schedule(dynamic,chunk) nowait
-	for (i = 0; i <= higestDegNum; i++)
+	for (i = 0; i <= highestDegNum; i++)
 		distribution[i] = 0;
 
 	#pragma omp for schedule(dynamic, chunk)
@@ -118,9 +118,9 @@ void writeDegreeDistribution(int higestDegNum, int lowestDegNum,
 	}
 }
 
-	if (higestDegNum > MAX_DATA_POINTS) {
+	if (highestDegNum > MAX_DATA_POINTS) {
 		numDataPoints = highestNode;
-		step = higestDegNum / MAX_DATA_POINTS;
+		step = highestDegNum / MAX_DATA_POINTS;
 	}
 
 	long variance = 0;
@@ -141,22 +141,24 @@ void writeDegreeDistribution(int higestDegNum, int lowestDegNum,
 	double standardDev = sqrt(variance);
 	printf("Standard deviation is: %lf\n", standardDev);
 
-	fprintf(f, "var data = {\n");
+	fprintf(f, "{\n");
 	fprintf(f, "\t\"name\": \"%s\",\n", filename);
 	fprintf(f, "\t\"nodeCount\": %d,\n", highestNode);
 	fprintf(f, "\t\"edgeCount\": %d,\n", edgeCount);
-	fprintf(f, "\t\"highestDeg\": %d,\n", higestDegNum);
+	fprintf(f, "\t\"highestDeg\": %d,\n", highestDegNum);
 	fprintf(f, "\t\"lowestDeg\": %d,\n", lowestDegNum);
 	fprintf(f, "\t\"avgDeg\": %d,\n", avgDegree);
 	fprintf(f, "\t\"standardDev\": %lf,\n", standardDev);
 	fprintf(f, "\t\"values\": [\n");
 
-	for (i = 0; i <= higestDegNum; i++) {
+	for (i = 0; i <= highestDegNum; i++) {
 		if (i > 0 && distribution[i] == 0) {
 			continue;
 		}
 
-		fprintf(f, "\t\t{\"x\": %d, \"y\": %d},\n", i, distribution[i]);
+		fprintf(f, "\t\t{\"x\": %d, \"y\": %d}", i, distribution[i]);
+        if(i < highestDegNum) fprintf(f, ",");
+        fprintf(f, "\n");
 	}
 
 	fprintf(f, "\t]\n");
@@ -165,7 +167,7 @@ void writeDegreeDistribution(int higestDegNum, int lowestDegNum,
 	fclose(f);
 	free(distribution);
 
-	printf("Data written as \"web/data.js\"\n");
+	printf("Data written as \"web/data.json\"\n");
 
 }
 
@@ -174,13 +176,13 @@ void degreeStats(char *filename) {
 	int lowestDegree = INT_MAX, highestDegree = 0, degree;
 	int i;
 
-	int higestDegNum, lowestDegNum;
+	int highestDegNum, lowestDegNum;
 
 	// parallel
 	int chunk = highestNode / 10;
 	if(highestNode < 10) chunk = 1;
 
-#pragma omp parallel shared(lowestDegree, highestDegree, degree, chunk, higestDegNum, lowestDegNum), private(i), reduction(+:averageDegree)
+#pragma omp parallel shared(lowestDegree, highestDegree, degree, chunk, highestDegNum, lowestDegNum), private(i), reduction(+:averageDegree)
 {
 
 	#pragma omp for schedule(dynamic,chunk) nowait
@@ -190,7 +192,7 @@ void degreeStats(char *filename) {
 
 			if (degree > highestDegree) {
 				highestDegree = degree;
-				higestDegNum = i;
+				highestDegNum = i;
 			}
 			if (degree < lowestDegree) {
 				lowestDegree = degree;
@@ -205,7 +207,7 @@ void degreeStats(char *filename) {
 
 	averageDegree /= highestNode;
 
-	printf("Highest degree:  %8d (#%d)\n", highestDegree, higestDegNum);
+	printf("Highest degree:  %8d (#%d)\n", highestDegree, highestDegNum);
 	printf("Lowest degree:   %8d (#%d)\n", lowestDegree, lowestDegNum);
 	printf("Average degree:  %8f\n", averageDegree);
 

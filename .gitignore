@@ -4,9 +4,10 @@ RingGenerate
 a.out
 Graph_Xcode
 *.o
-*.pyc
-.ropeproject
-web/data.js
-web/infData.js
+web/data.json
+web/infData.json
 results.txt
 tests
+
+*.pyc
+.ropeproject

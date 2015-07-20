@@ -226,13 +226,13 @@ void runSimulation(char *graphName) {
 		printf("\nAll agents were infected by round: %d\n", infectedRound);
 	}
 
-	FILE *output = fopen("web/infData.js", "w");
+	FILE *output = fopen("web/infData.json", "w");
 	if (!output) {
 		fprintf(stderr, "Could not open output file\n");
 		exit(1);
 	}
 
-	fprintf(output, "var data = {\n");
+	fprintf(output, "{\n");
 	fprintf(output, "\t\"name\": \"%s\",\n", graphName);
 	fprintf(output, "\t\"nodeCount\": %d,\n", highestNode);
 	fprintf(output, "\t\"edgeCount\": %d,\n", edgeCount);
