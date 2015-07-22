@@ -8,3 +8,5 @@ web/data.json
 web/infData.json
 results.txt
 tests
+
+*.pyc
