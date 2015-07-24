@@ -13,25 +13,29 @@ Node *createNode(int vertexNum) {
 	newNode->isRecovered = false;
 	newNode->roundInfected = -1;
 	newNode->roundRecovered = -1;
-	newNode->next = NULL;
+	newNode->next1 = NULL;
+    newNode->next2 = NULL;
 	
 	return newNode;
 }
 
-bool checkConnection(Node *srcNode, int dest) {
-	Node *temp = srcNode->next;
+bool checkConnection(Node *srcNode, int dest, int graphNum) {
+    Node *temp = NULL;
+	if(graphNum == 1) temp = srcNode->next1;
+    else temp = srcNode->next2;
 
 	while (temp != NULL) {
 		if (temp->vertexNum == dest)
 			return true;
 
-		temp = temp->next;
+        if(graphNum == 1) temp = temp->next1;
+        else temp = temp->next2;
 	}
 
 	return false;
 }
 
-void connectNode(int src, int dest) {
+void connectNode(int src, int dest, int graphNum) {
 	if (graph[src] == NULL) {
 		Node *head = createNode(src);
 		graph[src] = head;
@@ -40,12 +44,17 @@ void connectNode(int src, int dest) {
 	Node *temp = graph[src];
 	Node *newNode;
 	
-	if (!checkConnection(temp, dest)) {
-		while (temp->next != NULL)
-			temp = temp->next;
+	if (!checkConnection(temp, dest, graphNum)) {
+        if (graphNum == 1)
+            while (temp->next1 != NULL)
+                temp = temp->next1;
+        else
+            while (temp->next2 != NULL)
+                temp = temp->next2;
 
 		newNode = createNode(dest);
-		temp->next = newNode;
+		if (graphNum == 1) temp->next1 = newNode;
+        else temp->next2 = newNode;
 	}
 
 	if (graph[dest] == NULL) {
@@ -55,32 +64,43 @@ void connectNode(int src, int dest) {
 
 	temp = graph[dest];
 	
-	if (!checkConnection(temp, src)) {
-		while (temp->next != NULL)
-			temp = temp->next;
+	if (!checkConnection(temp, src, graphNum)) {
+        if (graphNum == 1)
+            while (temp->next1 != NULL)
+                temp = temp->next1;
+        else
+            while (temp->next2 != NULL)
+                temp = temp->next2;
 
 		newNode = createNode(src);
-		temp->next = newNode;
+		if (graphNum == 1) temp->next1 = newNode;
+        else temp->next2 = newNode;
 	}
 
 	edgeCount++;
 }
 
-int countDegree(Node *node) {
+int countDegree(Node *node, int graphNum) {
 	int count = 0;
 	Node *temp = node;
 	if (temp != NULL) {
-		while (temp->next != NULL) {
-			count++;
-			temp = temp->next;
-		}
+        if (graphNum == 1)
+            while (temp->next1 != NULL) {
+                count++;
+                temp = temp->next1;
+            }
+        else
+            while (temp->next2 != NULL) {
+                count++;
+                temp = temp->next2;
+            }
 	}
 
 	return count;
 }
 
 void writeDegreeDistribution(int highestDegNum, int lowestDegNum, 
-	int avgDegree, char *filename) {
+	int avgDegree, char *filename, int graphNum) {
 	int numDataPoints = highestNode;
 	int step = 1;
 
@@ -106,7 +126,7 @@ void writeDegreeDistribution(int highestDegNum, int lowestDegNum,
 
 	#pragma omp for schedule(dynamic, chunk)
 	for (i = 0; i <= highestNode; i++) {
-		int degree = countDegree(graph[i]);
+		int degree = countDegree(graph[i], graphNum);
 
 		if (degree > 0) {
 			#pragma omp atomic
@@ -127,7 +147,7 @@ void writeDegreeDistribution(int highestDegNum, int lowestDegNum,
 {
 	#pragma omp for reduction(+: variance)
 	for (i = 0; i <= highestNode; i++) {
-		int degree = countDegree(graph[i]);
+		int degree = countDegree(graph[i], graphNum);
 		int val = degree - avgDegree;
 		val *= val;
 		variance += val;
@@ -168,7 +188,7 @@ void writeDegreeDistribution(int highestDegNum, int lowestDegNum,
 
 }
 
-void degreeStats(char *filename) {
+void degreeStats(char *filename, int graphNum) {
 	double averageDegree = 0;
 	int lowestDegree = INT_MAX, highestDegree = 0, degree;
 	int i;
@@ -185,7 +205,7 @@ void degreeStats(char *filename) {
 	#pragma omp for schedule(dynamic,chunk) nowait
 	for (i = 0; i <= highestNode; i++) {
 		if (graph[i] != NULL) {
-			degree = countDegree(graph[i]);
+			degree = countDegree(graph[i], graphNum);
 
 			if (degree > highestDegree) {
 				highestDegree = degree;
@@ -208,17 +228,18 @@ void degreeStats(char *filename) {
 	printf("Lowest degree:   %8d (#%d)\n", lowestDegree, lowestDegNum);
 	printf("Average degree:  %8f\n", averageDegree);
 
-	writeDegreeDistribution(highestDegree, lowestDegree, averageDegree, filename);
+	writeDegreeDistribution(highestDegree, lowestDegree, averageDegree, filename, 1);
 }
 
-void graphStats(char *filename) {
+void graphStats(char *filename, int graphNum) {
 	printf("===== Graph Stats =====\n");
 	printf("Number of Nodes: %8d\n", highestNode);
 	printf("Number of Edges: %8d\n", edgeCount);
-	degreeStats(filename);
+	degreeStats(filename, graphNum);
 }
 
-void printGraph() {
+// NOT RE-IMPLEMENTED
+/*void printGraph() {
 	int i;
 	for (i = 0; i <= highestNode; i++) {
 		if (graph[i] != NULL) {
@@ -233,9 +254,9 @@ void printGraph() {
 			printf("\n");
 		}
 	}
-}
+}*/
 
-void readGraph(const char *filename) {
+void readGraph(const char *filename, int graphNum) {
 	FILE *f = fopen(filename, "r");
 
 	if (!f) {
@@ -260,8 +281,12 @@ void readGraph(const char *filename) {
 
 	}
 
-	graph = (Node **)malloc(sizeof(Node *)*highestNode+1);
-	memset(graph, 0, sizeof(Node *)*highestNode+1);
+    // assuming that graph 1 is read before graph 2
+    if (graphNum == 1)
+    {
+        graph = (Node **)malloc(sizeof(Node *)*highestNode+1);
+        memset(graph, 0, sizeof(Node *)*highestNode+1);
+    }
 
 	rewind(f);
 
@@ -271,7 +296,7 @@ void readGraph(const char *filename) {
 		tok = strtok(NULL, " ");
 		int dest = atoi(tok);
 
-		connectNode(src, dest);
+		connectNode(src, dest, graphNum);
 	}
 
 	fclose(f);

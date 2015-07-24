@@ -16,7 +16,7 @@ int seedInfection() {
 	return patientZero;
 }
 
-int infectNeighbors(Node *node, int round) {
+int infectNeighbors(Node *node, int round, int graphNum) {
 	if (round == node->roundInfected /*&& node->roundInfected != 0*/) {
 		// can't infect in the same round we got infected
 		return 0;
@@ -27,14 +27,17 @@ int infectNeighbors(Node *node, int round) {
 			return 0;	
 	}
 
-	Node *temp = node->next;
+	Node *temp = NULL;
+    if (graphNum == 1) temp = node->next1;
+    else temp = node->next2;
 
 	int newInfectious = 0;
 	while (temp != NULL) {
 		if (graph[temp->vertexNum] != NULL && !graph[temp->vertexNum]->isInfected) {
 			if (graph[temp->vertexNum]->isRecovered) {
 				temp->isRecovered = true;
-				temp = temp->next;
+				if (graphNum == 1) temp = temp->next1;
+                else temp = temp->next2;
 				continue;
 			}
 
@@ -46,7 +49,8 @@ int infectNeighbors(Node *node, int round) {
 
 			if (chance < infectiousProbability) {
 				if (round == graph[temp->vertexNum]->roundRecovered) {
-					temp = temp->next;
+					if (graphNum == 1) temp = temp->next1;
+                    else temp = temp->next2;
 					continue;
 				}
 
@@ -62,7 +66,8 @@ int infectNeighbors(Node *node, int round) {
 			}
 		}
 
-		temp = temp->next;
+		if (graphNum == 1) temp = temp->next1;
+        else temp = temp->next2;
 	}
 
 	return newInfectious;
@@ -161,6 +166,7 @@ void runSimulation(char *graphName) {
     bool lastRound = false;
 	for (i = 0; i < simulDuration; i++) {
 		printf("\rPerforming timestep %d", i);
+        int graphNum = (i%2)+1;
 
 		int infectionsThisRound = 0, recoveredThisRound = 0;
 		if (i == 0) {
@@ -175,7 +181,7 @@ void runSimulation(char *graphName) {
 				recoveredThisRound++;
 
 			if (graph[j] != NULL && graph[j]->isInfected)
-				infectionsThisRound += infectNeighbors(graph[j], i);
+				infectionsThisRound += infectNeighbors(graph[j], i, graphNum);
 		}
 		
 		countNodes(i, totalInfectious, totalRecovered, totalSusceptible);

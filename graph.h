@@ -14,7 +14,8 @@
 #endif
 
 typedef struct Node_t {
-	struct Node_t *next;
+	struct Node_t *next1;
+	struct Node_t *next2;
 
 	int vertexNum;
 
@@ -31,8 +32,8 @@ float infectiousProbability;
 int highestNode;
 int edgeCount;
 
-void readGraph(const char *filename);
-int countDegree(Node *node);
-bool checkConnection(Node *srcNode, int dest);
+void readGraph(const char *filename, int graphNum);
+int countDegree(Node *node, int graphNum);
+bool checkConnection(Node *srcNode, int dest, int graphNum);
 
 #endif
