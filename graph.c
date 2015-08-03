@@ -246,13 +246,13 @@ void readGraph(const char *filename) {
 	char buffer[256];
 	
 	while ((fgets(buffer, 256, f)) != NULL) {
-		char *tok = strtok(buffer, " ");
+		char *tok = strtok(buffer, " \t");
 		int nodeNum = atoi(tok);
 
 		if (nodeNum > highestNode)
 			highestNode = nodeNum;
 
-		tok = strtok(NULL, " ");
+		tok = strtok(NULL, " \t");
 		nodeNum = atoi(tok);
 
 		if (nodeNum > highestNode)
@@ -266,9 +266,9 @@ void readGraph(const char *filename) {
 	rewind(f);
 
 	while ((fgets(buffer, 256, f)) != NULL) {
-		char *tok = strtok(buffer, " ");
+		char *tok = strtok(buffer, " \t");
 		int src = atoi(tok);
-		tok = strtok(NULL, " ");
+		tok = strtok(NULL, " \t");
 		int dest = atoi(tok);
 
 		connectNode(src, dest);
