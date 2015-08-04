@@ -80,7 +80,7 @@ int countDegree(Node *node) {
 }
 
 void writeDegreeDistribution(int highestDegNum, int lowestDegNum, 
-	int avgDegree, char *filename) {
+	double avgDegree, char *filename) {
 	int numDataPoints = highestNode;
 	int step = 1;
 
@@ -144,7 +144,7 @@ void writeDegreeDistribution(int highestDegNum, int lowestDegNum,
 	fprintf(f, "\t\"edgeCount\": %d,\n", edgeCount);
 	fprintf(f, "\t\"highestDeg\": %d,\n", highestDegNum);
 	fprintf(f, "\t\"lowestDeg\": %d,\n", lowestDegNum);
-	fprintf(f, "\t\"avgDeg\": %d,\n", avgDegree);
+	fprintf(f, "\t\"avgDeg\": %lf,\n", avgDegree);
 	fprintf(f, "\t\"standardDev\": %lf,\n", standardDev);
 	fprintf(f, "\t\"values\": [\n");
 
