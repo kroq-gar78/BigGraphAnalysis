@@ -4,7 +4,7 @@
 
 import scipy as sp
 import scipy.stats
-from graph_tool.all import *
+from graph_tool import Graph
 
 import random
 
@@ -19,7 +19,7 @@ def vertex_degree(vtx):
     return len(list(vtx.all_edges()))
 
 # build a random graph based on a degree distribution
-# uses a naive/greedy approach, doesn't quite work
+# uses a naive/greedy approach, works mostly well (on large graphs)
 def normal_dist_graph(mean=10, stdev=5, num_vtx=100):
     g = Graph(directed=False)
     vtx = list(g.add_vertex(num_vtx))
@@ -34,22 +34,24 @@ def normal_dist_graph(mean=10, stdev=5, num_vtx=100):
 
         # repeat for as many nodes as needed
         needed = dist[i] - vertex_degree(vtx[i])
-        print "needed: %d" % needed
+        if needed>0: print "%4d, needed: %d" % (i, needed)
         neighbors = list(vtx[i].all_neighbours())
         for j in xrange( needed ):
             if(len(vtx_tmp) > 0): dest = random.choice(vtx_tmp)
-            else: break
-            while(dest in neighbors and vertex_degree(dest)>dist[g.vertex_index[dest]]):
+            else: break # give up; stop adding more edges
+            while(dest in neighbors or vertex_degree(dest)>=dist[g.vertex_index[dest]]):
                 vtx_tmp.remove(dest)
                 if(len(vtx_tmp) > 0): dest = random.choice(vtx_tmp)
-                else: break
+                else: break # give up; use final node in `vtx_tmp`
+            #print vertex_degree(dest) > dist[g.vertex_index[dest]]
             edge = g.add_edge(vtx[i], dest)
-            vtx_tmp.remove(dest)
+            if(len(vtx_tmp) > 0): vtx_tmp.remove(dest)
 
         if (vertex_degree(vtx[i]) != dist[i]):
-            print "ERROR: (degree(vtx[%d]) = %d) != %d" % (i, vertex_degree((vtx[i]), dist[i])
+            print "ERROR: (degree(vtx[%d]) = %d) != %d" % (i, vertex_degree(vtx[i]), dist[i])
             #break
 
+    print "total expected edges: %d" % (sum(dist)/2)
     return g
 
 # generate a ring that is connected to neighbors with distance 'k'
@@ -85,6 +87,6 @@ def ring(num_vtx=100, k=2, p=0.0):
     return g
 
 if __name__ == "__main__":
-    #normal_dist_graph(mean=10, stdev=5, num_vtx=100)
+    #normal_dist_graph(mean=10, stdev=5, num_vtx=10000)
     ring(num_vtx=100, k=2, p=0.5)
 
