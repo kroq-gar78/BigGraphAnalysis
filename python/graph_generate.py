@@ -27,27 +27,36 @@ def normal_dist_graph(mean=10, stdev=5, num_vtx=100):
     dist = map(lambda x: 1 if x < 1 else x , dist) # lower limit; assume connected
     dist = map(lambda x: num_vtx-1 if x >= num_vtx else x , dist) # upper limit
     dist = map(lambda x: int(round(x)) , dist)
+
+    # can't have odd sum of degrees, so add 1 to random vertex
+    if sum(dist)&1==1:
+        i_rand = random.randrange(num_vtx)
+        dist[i_rand] += 1
+
+    needed = dist[:]
+
     print dist
     for i in xrange(len(vtx)):
         vtx_tmp = vtx[:]
         vtx_tmp.remove(vtx[i])
 
         # repeat for as many nodes as needed
-        needed = dist[i] - vertex_degree(vtx[i])
-        if needed>0: print "%4d, needed: %d" % (i, needed)
+        if needed[i] > 0: print "%4d, needed: %d" % (i, needed[i])
         neighbors = list(vtx[i].all_neighbours())
-        for j in xrange( needed ):
+        for j in xrange( needed[i] ):
             if(len(vtx_tmp) > 0): dest = random.choice(vtx_tmp)
-            else: break # give up; stop adding more edges
-            while(dest in neighbors or vertex_degree(dest)>=dist[g.vertex_index[dest]]):
+            else: print "give up 1, needed: %d" % needed[i]; break # give up; stop adding more edges
+            while(dest in neighbors or needed[g.vertex_index[dest]]<=0):
                 vtx_tmp.remove(dest)
                 if(len(vtx_tmp) > 0): dest = random.choice(vtx_tmp)
-                else: break # give up; use final node in `vtx_tmp`
+                else: print "give up 2, needed %d" % needed[i]; break # give up; use final node in `vtx_tmp`
             #print vertex_degree(dest) > dist[g.vertex_index[dest]]
             edge = g.add_edge(vtx[i], dest)
+            needed[i] -= 1
+            needed[g.vertex_index[dest]] -= 1
             if(len(vtx_tmp) > 0): vtx_tmp.remove(dest)
 
-        if (vertex_degree(vtx[i]) != dist[i]):
+        if (needed[i] != 0):
             print "ERROR: (degree(vtx[%d]) = %d) != %d" % (i, vertex_degree(vtx[i]), dist[i])
             #break
 
