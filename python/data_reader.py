@@ -7,6 +7,7 @@ import scipy as sp
 import json
 
 def load_infData(path):
+    states = {} # new infections and al 3 stages
     f = open(path,'r')
     data = json.load(f)
 
@@ -14,10 +15,10 @@ def load_infData(path):
     for i in data['values']:
         newInfections[i["x"],0] = i["x"]
         newInfections[i["x"],1] = i["y"]
+    states['newinf'] = newInfections
 
     #plot(newInfections[:,0], newInfections[:,1])
 
-    states = {}
     states['inf'] = np.zeros((data['roundsNeeded'], 2), dtype=int)
     states['rec'] = np.zeros((data['roundsNeeded'], 2), dtype=int)
     states['sus'] = np.zeros((data['roundsNeeded'], 2), dtype=int)
@@ -36,10 +37,10 @@ def load_infData(path):
          #states['sus'][:,0], states['sus'][:,1], 'g')
     #plt.show()
 
-    return (newInfections, states)
+    return states
 
 if __name__=="__main__":
-    newInfections, states = load_infData("../web/infData.json")
+    states = load_infData("../web/infData.json")
 
     #plot(newInfections[:,0], newInfections[:,1])
 
