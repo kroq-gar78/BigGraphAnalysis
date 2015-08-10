@@ -21,7 +21,47 @@ static struct argp_option options[] =
     {"duration", 'd', "steps",0, "Maximum number of time steps"},
     {0}
 };
-static error_t parse_opt(int key, char *arg, struct argp_state *state);
+static error_t parse_opt(int key, char *arg, struct argp_state *state) {
+    struct arguments *arguments = state->input;
+
+    switch(key) {
+        case 'a':
+            arguments->action = 'a';
+            break;
+        case 'r':
+            arguments->action = 'r';
+            break;
+        case 't':
+            arguments->type = *arg;
+            break;
+        case 'i':
+            arguments->infectiousProbability = (float)atof(arg);
+            break;
+        case 'c':
+            arguments->contactChance = (float)atof(arg); 
+            break;
+        case 'k':
+            arguments->kVal = atoi(arg);
+            break;
+        case 'p':
+            arguments->infectiousPeriod = atoi(arg);
+            break;
+        case 'd':
+            arguments->simulDuration = atoi(arg);
+            break;
+        case ARGP_KEY_ARG:
+             /* from: https://www.gnu.org/software/libc/manual/html_node/Argp-Example-4.html
+             state->arg_num == 0 since we force this to be parsed last */
+            arguments->graph_path = arg;
+
+            // force argp to stop parsing
+            state->next = state->argc;
+            break;
+        default:
+            return ARGP_ERR_UNKNOWN;
+    }
+    return 0;
+}
 static struct argp argp;
 
 int main(int argc, char const *argv[]) {
