@@ -62,10 +62,25 @@ static error_t parse_opt(int key, char *arg, struct argp_state *state) {
     }
     return 0;
 }
-static struct argp argp;
+static struct argp argp = {options, parse_opt, args_doc, doc};
 
-int main(int argc, char const *argv[]) {
+int main(int argc, char **argv) {
 	
+    struct arguments arguments;
+
+    // define defaults
+    arguments.action = 0;
+    arguments.type = 'n';
+    arguments.infectiousProbability = -1;
+    arguments.contactChance = -1;
+    arguments.kVal = 0;
+    arguments.infectiousPeriod = -1;
+    arguments.simulDuration = -1;
+
+    /*printf("%c %c %f %f %d %d %d", arguments.action, arguments.type, arguments.infectiousProbability,  arguments.contactChance, arguments.kVal, arguments.infectiousPeriod, arguments.simulDuration);*/
+
+    argp_parse(&argp, argc, argv, 0, 0, &arguments);
+
 	if (argc != 2) {
 		fprintf(stderr, "Usage: %s <graphFile>\n", argv[0]);
 		fprintf(stderr, "<graphFile>: Name of graph to test\n");
