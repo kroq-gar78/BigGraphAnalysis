@@ -30,7 +30,8 @@ int infectNeighbors(Node *node, int round) {
 	Node *temp = node->next;
 
 	int newInfectious = 0;
-	int maxNum = kVal * countDegree(node);
+    int maxNum = (int)ceil(kVal * countDegree(node));
+    if(maxNum <= 0) return 0;
 	while (temp != NULL) {
 		if (graph[temp->vertexNum] != NULL && !graph[temp->vertexNum]->isInfected) {
 			if (graph[temp->vertexNum]->isRecovered) {
@@ -57,8 +58,9 @@ int infectNeighbors(Node *node, int round) {
 				graph[temp->vertexNum]->roundInfected = round;
 				newInfectious++;
 
+                // Can only infect kVal*degree per round
 				if (newInfectious >= maxNum) {
-					break; // Can only infect kVal*degree per round
+					break;
 				}
 			}
 		}
@@ -136,7 +138,7 @@ void runSimulation(char *graphName) {
 		exit(1);
 	}
 
-	printf("Enter k value (percentage of nodes we can infect per round): ");
+	printf("Enter k value (percentage of neighbors a node can infect per round): ");
 	scanf("%f", &kVal);
 
     if (kVal > 1.0 || kVal < 0.0) {
