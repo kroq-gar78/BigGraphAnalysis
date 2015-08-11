@@ -2,7 +2,7 @@
 #include "simulation.h"
 
 int main(int argc, char const *argv[]) {
-	
+
 	if (argc != 2) {
 		fprintf(stderr, "Usage: %s <graphFile>\n", argv[0]);
 		fprintf(stderr, "<graphFile>: Name of graph to test\n");

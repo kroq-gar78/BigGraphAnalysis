@@ -24,7 +24,7 @@ int infectNeighbors(Node *node, int round) {
 
 	if (type == 'a') {
 		if (round - (node->roundInfected+1) >= infectiousPeriod)
-			return 0;	
+			return 0;
 	}
 
 	Node *temp = node->next;
@@ -139,8 +139,9 @@ void runSimulation(char *graphName) {
 	printf("Enter k value (percentage of nodes we can infect per round): ");
 	scanf("%f", &kVal);
 
-	if (kVal == 0)
-		kVal = highestNode;
+    if (kVal > 1.0 || kVal < 0.0) {
+        fprintf(stderr, "Invalid k value: %f\nUse a number from 0 to 1.", kVal);
+    }
 
 	int simulDuration;
 	printf("How many timesteps for this simulation: ");
@@ -171,7 +172,7 @@ void runSimulation(char *graphName) {
 		int infectionsThisRound = 0, recoveredThisRound = 0;
 		if (i == 0) {
 			zero = seedInfection();
-            infectionsThisRound++; // so that we can get 100% infection instead of 99% 
+            infectionsThisRound++; // so that we can get 100% infection instead of 99%
         }
 
 		for (j = 0; j <= highestNode; j++) {
@@ -183,7 +184,7 @@ void runSimulation(char *graphName) {
 			if (graph[j] != NULL && graph[j]->isInfected)
 				infectionsThisRound += infectNeighbors(graph[j], i);
 		}
-		
+
 		countNodes(i, totalInfectious, totalRecovered, totalSusceptible);
 
 		newInfectious[i] = infectionsThisRound;
@@ -199,7 +200,7 @@ void runSimulation(char *graphName) {
 		if (allRecovered)
 			lastRound = true; // do an extra round for completeness (otherwise, infectious doesn't really reach 0 in output)
 		if (totalInfectious[i] == 0) { // stop if no disease left
-            lastRound = true; 
+            lastRound = true;
         }
 		if (allInfectious)
 			infectedRound = i;
