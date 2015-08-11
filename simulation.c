@@ -3,7 +3,7 @@
 
 int infectiousPeriod;
 float contactChance;
-int kVal;
+float kVal;
 
 char type;
 
@@ -30,6 +30,7 @@ int infectNeighbors(Node *node, int round) {
 	Node *temp = node->next;
 
 	int newInfectious = 0;
+	int maxNum = kVal * countDegree(node);
 	while (temp != NULL) {
 		if (graph[temp->vertexNum] != NULL && !graph[temp->vertexNum]->isInfected) {
 			if (graph[temp->vertexNum]->isRecovered) {
@@ -56,8 +57,8 @@ int infectNeighbors(Node *node, int round) {
 				graph[temp->vertexNum]->roundInfected = round;
 				newInfectious++;
 
-				if (newInfectious >= kVal) {
-					break; // Can only infect kVal per round
+				if (newInfectious >= maxNum) {
+					break; // Can only infect kVal*degree per round
 				}
 			}
 		}
@@ -135,8 +136,8 @@ void runSimulation(char *graphName) {
 		exit(1);
 	}
 
-	printf("Enter k value (Max # a node may infect per round, 0 for no limit): ");
-	scanf("%d", &kVal);
+	printf("Enter k value (percentage of nodes we can infect per round): ");
+	scanf("%f", &kVal);
 
 	if (kVal == 0)
 		kVal = highestNode;
@@ -235,7 +236,7 @@ void runSimulation(char *graphName) {
 	fprintf(output, "\t\"infectionChance\": %f,\n", infectiousProbability);
 	fprintf(output, "\t\"contactChance\": %f,\n", contactChance);
 	fprintf(output, "\t\"infectionPeriod\": %d,\n", infectiousPeriod);
-	fprintf(output, "\t\"kVal\": %d,\n", kVal);
+	fprintf(output, "\t\"kVal\": %f,\n", kVal);
 
 	if (isAllInfected) {
 		fprintf(output, "\t\"endStep\": %d,\n", infectedRound);
