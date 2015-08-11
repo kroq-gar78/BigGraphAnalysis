@@ -10,10 +10,9 @@ static char args_doc[] = "ARG1 ARG2";
 static struct argp_option options[] = 
 {
     {"analyze", 'a', 0, 0, "Produce a degree distribution of the graph"},
-    {"infect",  'r', 0, 0, "Run an SIR (or derivative) simulation on the graph"},
+    {"infect",  'r', "TYPE", OPTION_ARG_OPTIONAL, "Run an SIR (or derivative) simulation on the graph. TYPE determines the type of infection to model."},
 
     {0,0,0,0, "Simulation options:"},
-    {"type",     't', "type", 0, ""}, // TODO: combine this with 'infect'
     {"pinfect",  'i', "PROB", 0, "Probability of an infected node infecting a susceptible neighbor"},
     {"pcontact", 'c', "PROB", 0, "Probability of two nodes with an edge of coming into contact"},
     {"kval",     'k', "k",    0, "Maximum number of neighbors an infected node may infect"},
@@ -30,9 +29,7 @@ static error_t parse_opt(int key, char *arg, struct argp_state *state) {
             break;
         case 'r':
             arguments->action = 'r';
-            break;
-        case 't':
-            arguments->type = *arg;
+            arguments->type = arg ? *arg : 0; // only first character matters anyway
             break;
         case 'i':
             arguments->infectiousProbability = (float)atof(arg);
