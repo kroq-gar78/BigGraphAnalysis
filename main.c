@@ -65,8 +65,6 @@ static error_t parse_opt(int key, char *arg, struct argp_state *state) {
 static struct argp argp = {options, parse_opt, args_doc, doc};
 
 int main(int argc, char **argv) {
-	
-    struct arguments arguments;
 
     // define defaults
     arguments.action = 0;
@@ -81,34 +79,37 @@ int main(int argc, char **argv) {
 
     argp_parse(&argp, argc, argv, 0, 0, &arguments);
 
-	if (argc != 2) {
+    // TODO: see how to use argp to do this
+	/*if (argc != 2) {
 		fprintf(stderr, "Usage: %s <graphFile>\n", argv[0]);
 		fprintf(stderr, "<graphFile>: Name of graph to test\n");
 		exit(1);
-	}
+	}*/
 
 	clock_t t1, t2;
 	t1 = clock();
 
-	readGraph(argv[1]);
+	readGraph(arguments.graph_path);
 
 	t1 = clock() - t1; // Done reading
 	t2 = clock();
 
-	char *temp = (char *)malloc(strlen(argv[1])+1);
-	strcpy(temp, argv[1]);
+    char *temp = (char *)malloc(strlen(arguments.graph_path)+1);
+	strcpy(temp, arguments.graph_path);
 
 	char *tok = strtok(temp, "/");
 
 	if ((tok = strtok(NULL, "/")) != NULL) {
 		tok = strtok(tok, ".");
 	} else {
-		tok = strtok((char *)argv[1], ".");
+		tok = strtok((char *)arguments.graph_path, ".");
 	}
 
-	char choice = 'z';
-	printf("[a]nalyze graph or [r]un simulation: ");
-	scanf("%c", &choice);
+	char choice = arguments.action;
+    if (choice == 0) {
+        printf("[a]nalyze graph or [r]un simulation: ");
+        scanf("%c", &choice);
+    }
 
 	if (choice == 'a')
 		graphStats(tok);

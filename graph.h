@@ -38,6 +38,7 @@ struct arguments {
     int infectiousPeriod;
     int simulDuration;
 };
+struct arguments arguments;
 
 Node **graph;
 
