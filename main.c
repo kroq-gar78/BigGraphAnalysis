@@ -68,10 +68,10 @@ int main(int argc, char **argv) {
 
     // define defaults
     arguments.action = 0;
-    arguments.type = 'n';
+    arguments.type = 0;
     arguments.infectiousProbability = -1;
     arguments.contactChance = -1;
-    arguments.kVal = 0;
+    arguments.kVal = -1;
     arguments.infectiousPeriod = -1;
     arguments.simulDuration = -1;
 

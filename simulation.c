@@ -115,14 +115,23 @@ void runSimulation(char *graphName) {
      * accumulative: SI
      * reinfect: SIS
      **/
-	printf("Select simulation: [n]ormal, [a]ccumulative, or [r]einfect: ");
-	scanf(" %c", &type);
+    type = arguments.type;
+    if (type == 0) {
+        printf("Select simulation: [n]ormal, [a]ccumulative, or [r]einfect: ");
+        scanf(" %c", &type);
+    }
 
-	printf("Enter the probability of an agent to become infectious: ");
-	scanf("%f", &infectiousProbability);
+    infectiousProbability = arguments.infectiousProbability;
+    if (infectiousProbability == -1) {
+        printf("Enter the probability of an agent to become infectious: ");
+        scanf("%f", &infectiousProbability);
+    }
 
-	printf("Enter the probability of contact between agents: ");
-	scanf("%f", &contactChance);
+    contactChance = arguments.contactChance;
+    if (contactChance == -1) {
+        printf("Enter the probability of contact between agents: ");
+        scanf("%f", &contactChance);
+    }
 
 	if (infectiousProbability > 1.0 || infectiousProbability < 0.0 ||
         contactChance > 1.0 || contactChance < 0.0) {
@@ -130,18 +139,26 @@ void runSimulation(char *graphName) {
 		exit(1);
 	}
 
-	printf("Enter k value (Max # a node may infect per round, 0 for no limit): ");
-	scanf("%d", &kVal);
+    kVal = arguments.kVal;
+    if (kVal == -1) {
+        printf("Enter k value (Max # a node may infect per round, 0 for no limit): ");
+        scanf("%d", &kVal);
+    }
 
 	if (kVal == 0)
 		kVal = highestNode;
 
-	int simulDuration;
-	printf("How many timesteps for this simulation: ");
-	scanf("%d", &simulDuration);
+	int simulDuration = arguments.simulDuration;
+    if (simulDuration == -1) {
+        printf("How many timesteps for this simulation: ");
+        scanf("%d", &simulDuration);
+    }
 
-	printf("Enter the period an agent will remain infectious: ");
-	scanf("%d", &infectiousPeriod);
+    infectiousPeriod = arguments.infectiousPeriod;
+    if (infectiousPeriod == -1) {
+        printf("Enter the period an agent will remain infectious: ");
+        scanf("%d", &infectiousPeriod);
+    }
 
 	int *newInfectious = (int *)malloc(sizeof(int)*simulDuration);
 	int *totalInfectious = (int *)malloc(sizeof(int)*simulDuration);
