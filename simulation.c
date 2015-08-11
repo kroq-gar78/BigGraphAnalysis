@@ -230,7 +230,16 @@ void runSimulation(char *graphName) {
 		printf("\nAll agents were infected by round: %d\n", infectedRound);
 	}
 
-	FILE *output = fopen("web/infData.json", "w");
+    char *outfile;
+    if (strlen(arguments.outfile) == 0) {
+        outfile = "web/infData.json";
+    }
+    else {
+        outfile = (char *)malloc(strlen(arguments.outfile)+1);
+        strcpy(outfile, arguments.outfile);
+    }
+    FILE *output = fopen(outfile, "w");
+
 	if (!output) {
 		fprintf(stderr, "Could not open output file\n");
 		exit(1);
@@ -296,5 +305,5 @@ void runSimulation(char *graphName) {
 	free(totalRecovered);
 
 	fclose(output);
-	printf("\nPer round results written to \"results.txt\"\n");
+	printf("\nPer round results written to \"%s\"\n", outfile);
 }

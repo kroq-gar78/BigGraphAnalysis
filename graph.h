@@ -30,6 +30,7 @@ typedef struct Node_t {
 extern const char *argp_program_version; // is this safe?
 struct arguments {
     char *graph_path;
+    char *outfile;
     char action;
     char type;
     float infectiousProbability;

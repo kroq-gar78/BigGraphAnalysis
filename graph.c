@@ -84,7 +84,16 @@ void writeDegreeDistribution(int highestDegNum, int lowestDegNum,
 	int numDataPoints = highestNode;
 	int step = 1;
 
-	FILE *f = fopen("web/data.json", "w");
+    //FILE *f;
+    char *outfile;
+    if (strlen(arguments.outfile) == 0) {
+        outfile = "web/data.json";
+    }
+    else {
+        outfile = (char *)malloc(strlen(arguments.outfile)+1);
+        strcpy(outfile, arguments.outfile);
+    }
+    FILE *f = fopen(outfile, "w");
 
 	if (!f) {
 		fprintf(stderr, "Unable to open output file\n");
@@ -164,7 +173,7 @@ void writeDegreeDistribution(int highestDegNum, int lowestDegNum,
 	fclose(f);
 	free(distribution);
 
-	printf("Data written as \"web/data.json\"\n");
+	printf("Data written as \"%s\"\n", outfile);
 
 }
 

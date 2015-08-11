@@ -10,6 +10,7 @@ static char args_doc[] = "ARG1 ARG2";
 static struct argp_option options[] = 
 {
     {"analyze", 'a', 0, 0, "Produce a degree distribution of the graph"},
+    {"output",  'o', "FILE", 0, "Use FILE instead of 'web/data.json' or 'web/infData.json'. Note that data in 'web/' is not changed, so JavaScript graphs aren't updated."},
     {"infect",  'r', "TYPE", OPTION_ARG_OPTIONAL, "Run an SIR (or derivative) simulation on the graph. TYPE determines the type of infection to model."},
 
     {0,0,0,0, "Simulation options:"},
@@ -24,6 +25,9 @@ static error_t parse_opt(int key, char *arg, struct argp_state *state) {
     struct arguments *arguments = state->input;
 
     switch(key) {
+        case 'o':
+            arguments->outfile = arg;
+            break;
         case 'a':
             arguments->action = 'a';
             break;
@@ -64,6 +68,7 @@ static struct argp argp = {options, parse_opt, args_doc, doc};
 int main(int argc, char **argv) {
 
     // define defaults
+    arguments.outfile = "";
     arguments.action = 0;
     arguments.type = 0;
     arguments.infectiousProbability = -1;
@@ -72,7 +77,7 @@ int main(int argc, char **argv) {
     arguments.infectiousPeriod = -1;
     arguments.simulDuration = -1;
 
-    /*printf("%c %c %f %f %d %d %d", arguments.action, arguments.type, arguments.infectiousProbability,  arguments.contactChance, arguments.kVal, arguments.infectiousPeriod, arguments.simulDuration);*/
+    //printf("%c %c %f %f %d %d %d", arguments.action, arguments.type, arguments.infectiousProbability,  arguments.contactChance, arguments.kVal, arguments.infectiousPeriod, arguments.simulDuration);
 
     argp_parse(&argp, argc, argv, 0, 0, &arguments);
 
