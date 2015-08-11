@@ -106,7 +106,12 @@ void countNodes(int t, int *numInfected, int *numRecovered, int *numSusceptible)
 }
 
 void runSimulation(char *graphName) {
-	srand(time(NULL));
+
+    // use both time (in microseconds) and PID for RNG seed
+    // from: https://stackoverflow.com/a/15846558
+    struct timeval t;
+    gettimeofday(&t, NULL);
+	srand(t.tv_usec * t.tv_sec * getpid());
 
 	fflush(stdin);
 
