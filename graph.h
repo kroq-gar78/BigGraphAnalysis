@@ -13,8 +13,6 @@
 #include <omp.h>
 #endif
 
-#include "csparse.h"
-
 typedef struct Node_t {
 	struct Node_t *next;
 
@@ -34,9 +32,6 @@ float infectiousProbability;
 int highestNode;
 int edgeCount;
 int *numVaccinated;
-
-//bool *adj; // adjacency matrix; use non-zero initial size
-cs *adj;
 
 void readGraph(const char *filename);
 void readVaccinated(const char *filename);

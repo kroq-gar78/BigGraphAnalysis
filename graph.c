@@ -47,7 +47,6 @@ void connectNode(int src, int dest) {
 
 		newNode = createNode(dest);
 		temp->next = newNode;
-        cs_entry(adj, src, dest, 1.0);
 	}
 
 	if (graph[dest] == NULL) {
@@ -63,7 +62,6 @@ void connectNode(int src, int dest) {
 
 		newNode = createNode(src);
 		temp->next = newNode;
-        cs_entry(adj, dest, src, 1.0);
 	}
 
 	edgeCount++;
@@ -267,11 +265,6 @@ void readGraph(const char *filename) {
     numVaccinated = (int *)malloc(sizeof(int));
 	memset(graph, 0, sizeof(Node *)*highestNode+1);
     *numVaccinated = 0;
-    /*bool (*adj)[highestNode+1] = malloc((highestNode+1)*sizeof(bool));*/
-
-    // use csparse for sparse matrix
-    adj = cs_spalloc(highestNode+1, highestNode+1, (highestNode+1)*(10+1), // assuming average degree 10 
-            1 , 1);
 
 	rewind(f);
 
