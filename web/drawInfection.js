@@ -1,4 +1,5 @@
 var graph;
+var data;
 var xPadding = 65;
 var yPadding = 70;
 var maxYKeys = 7;
@@ -43,6 +44,14 @@ $(document).ready(function() {
 	graph = $('#graph');
 	var c = graph[0].getContext('2d');
 
+	// load data
+	$.ajax({
+		dataType: "json",
+		url: "infData.json",
+		async: false,
+		success: function(response) {data = response;}
+	});
+
 	var oldFill = c.fillStyle;
 
 	c.fillStyle = '#fff';
@@ -82,7 +91,7 @@ $(document).ready(function() {
 	for (var i = 0; i < Math.min(maxXKeys, data.values.length); i++) {
 		if (data.values[i*step] != undefined)
 			c.fillText(data.values[i*step].x, getXPixel(i*step), graph.height() - yPadding + 20);
-	}	
+	}
 
 	// Draw y keys
 	step = getMaxY() / maxYKeys;
@@ -135,12 +144,13 @@ $(document).ready(function() {
 	infoElem.html('<strong>Graph Name:</strong> ' + data.name
 			+ '<br><strong>Node Count:</strong> ' + data.nodeCount.toLocaleString()
 			+ '<br><strong>Edge Count:</strong> ' + data.edgeCount.toLocaleString()
-			+ '<br><strong>Total Infected:</strong> ' + data.infectionCount.toLocaleString() + "/" + data.nodeCount.toLocaleString() 
+			+ '<br><strong>Total Infected:</strong> ' + data.infectionCount.toLocaleString() + "/" + data.nodeCount.toLocaleString()
 			+ ' (' + ((data.infectionCount/data.nodeCount)*100).toFixed(2) + '%)'
 			+ '<br><strong>Patient Zero:</strong> ' + data.patientZero.toLocaleString()
 			+ '<br><strong>Chance of Infection:</strong> ' + (data.infectionChance * 100) + '%'
 			+ '<br><strong>Chance of Contact:</strong> ' + Math.floor((data.contactChance * 100)) + '%'
 			+ '<br><strong>Simulation Duration:</strong> ' + data.simulDuration.toLocaleString()
+			+ '<br><strong>Rounds Needed:</strong> ' + data.roundsNeeded.toLocaleString()
 			+ '<br><strong>Infectious Period:</strong> ' + data.infectionPeriod.toLocaleString()
 			+ '<br><strong>K Value:</strong> ' + data.kVal.toLocaleString());
 
@@ -218,7 +228,7 @@ function drawSIRGraph() {
 	for (var i = 0; i < Math.min(maxXKeys, data.numInf.length); i++) {
 		if (data.numInf[i*step] != undefined)
 			c.fillText(data.numInf[i*step].x, sirGetXPixel(i*step), graph.height() - yPadding + 20);
-	}	
+	}
 
 	// Draw y keys
 	step = sirGetMaxY() / maxYKeys;

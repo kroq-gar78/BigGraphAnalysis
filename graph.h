@@ -8,6 +8,8 @@
 #include <limits.h>
 #include <time.h>
 #include <math.h>
+#include <error.h>
+#include <argp.h>
 
 #ifdef PARALELL
 #include <omp.h>
@@ -24,6 +26,20 @@ typedef struct Node_t {
 	int roundRecovered;
 
 } Node;
+
+extern const char *argp_program_version; // is this safe?
+struct arguments {
+    char *graph_path;
+    char *outfile;
+    char action;
+    char type;
+    float infectiousProbability;
+    float contactChance;
+    float kVal;
+    int infectiousPeriod;
+    int simulDuration;
+};
+struct arguments arguments;
 
 Node **graph;
 

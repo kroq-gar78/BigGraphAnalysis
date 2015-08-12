@@ -1,4 +1,5 @@
 var graph;
+var data;
 var xPadding = 65;
 var yPadding = 70;
 var maxYKeys = 7;
@@ -42,6 +43,14 @@ function getMostCommonDegree() {
 $(document).ready(function() {
 	graph = $('#graph');
 	var c = graph[0].getContext('2d');
+
+	// load data
+	$.ajax({
+		dataType: "json",
+		url: "data.json",
+		async: false,
+		success: function(response) {data = response;}
+	});
 
 	var oldFill = c.fillStyle;
 
