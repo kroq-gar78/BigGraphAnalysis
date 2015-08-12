@@ -34,20 +34,25 @@ def normal_dist_graph(mean=10, stdev=5, num_vtx=100):
         dist[i_rand] += 1
 
     needed = dist[:]
+    vtx_short = vtx[:]
 
-    print dist
     for i in xrange(len(vtx)):
-        vtx_tmp = vtx[:]
-        vtx_tmp.remove(vtx[i])
+
+        if needed[i] > 0:
+            print "%4d, needed: %d" % (i, needed[i])
+            vtx_tmp = vtx_short[:]
+            vtx_tmp.remove(vtx[i])
+        else: continue
 
         # repeat for as many nodes as needed
-        if needed[i] > 0: print "%4d, needed: %d" % (i, needed[i])
         neighbors = list(vtx[i].all_neighbours())
         for j in xrange( needed[i] ):
             if(len(vtx_tmp) > 0): dest = random.choice(vtx_tmp)
             else: print "give up 1, needed: %d" % needed[i]; break # give up; stop adding more edges
             while(dest in neighbors or needed[g.vertex_index[dest]]<=0):
                 vtx_tmp.remove(dest)
+                if(needed[g.vertex_index[dest]]<=0):
+                    vtx_short.remove(dest)
                 if(len(vtx_tmp) > 0): dest = random.choice(vtx_tmp)
                 else: print "give up 2, needed %d" % needed[i]; break # give up; use final node in `vtx_tmp`
             #print vertex_degree(dest) > dist[g.vertex_index[dest]]
