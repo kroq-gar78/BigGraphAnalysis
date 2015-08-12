@@ -269,8 +269,8 @@ void readGraph(const char *filename) {
 
 	}
 
-	graph = (Node **)malloc(sizeof(Node *)*highestNode+1);
-	memset(graph, 0, sizeof(Node *)*highestNode+1);
+	graph = (Node **)malloc(sizeof(Node *)*(highestNode+1));
+	memset(graph, 0, sizeof(Node *)*(highestNode+1));
 
 	rewind(f);
 
