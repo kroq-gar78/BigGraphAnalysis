@@ -23,9 +23,17 @@ def vertex_degree(vtx):
 def normal_dist_graph(mean=10, stdev=5, num_vtx=100):
     g = Graph(directed=False)
     vtx = list(g.add_vertex(num_vtx))
-    dist = sp.stats.norm.rvs(loc=mean, scale=stdev, size=num_vtx)
-    dist = map(lambda x: 1 if x < 1 else x , dist) # lower limit; assume connected
-    dist = map(lambda x: num_vtx-1 if x >= num_vtx else x , dist) # upper limit
+
+    # make sure all points in distribution are within bounds
+    dist = []
+    while(len(dist) < num_vtx):
+        extra = sp.stats.norm.rvs(loc=mean, scale=stdev, size=num_vtx-len(dist))
+        dist.extend(extra)
+        dist = filter(lambda x: not (x < 1 or x >= num_vtx), dist) # remove points out of degree bounds
+        print len(dist), num_vtx
+
+    #print len(dist), num_vtx
+    #return
     dist = map(lambda x: int(round(x)) , dist)
 
     # can't have odd sum of degrees, so add 1 to random vertex
@@ -34,7 +42,7 @@ def normal_dist_graph(mean=10, stdev=5, num_vtx=100):
         dist[i_rand] += 1
 
     needed = dist[:]
-    vtx_short = vtx[:]
+    vtx_short = vtx[:] # "template" list for nodes to copy
 
     for i in xrange(len(vtx)):
 
