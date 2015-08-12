@@ -163,8 +163,8 @@ void writeDegreeDistribution(int highestDegNum, int lowestDegNum,
 		}
 
 		fprintf(f, "\t\t{\"x\": %d, \"y\": %d}", i, distribution[i]);
-        if(i < highestDegNum) fprintf(f, ",");
-        fprintf(f, "\n");
+		if(i < highestDegNum) fprintf(f, ",");
+		fprintf(f, "\n");
 	}
 
 	fprintf(f, "\t]\n");
