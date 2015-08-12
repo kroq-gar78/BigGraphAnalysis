@@ -23,9 +23,17 @@ def vertex_degree(vtx):
 def normal_dist_graph(mean=10, stdev=5, num_vtx=100):
     g = Graph(directed=False)
     vtx = list(g.add_vertex(num_vtx))
-    dist = sp.stats.norm.rvs(loc=mean, scale=stdev, size=num_vtx)
-    dist = map(lambda x: 1 if x < 1 else x , dist) # lower limit; assume connected
-    dist = map(lambda x: num_vtx-1 if x >= num_vtx else x , dist) # upper limit
+
+    # make sure all points in distribution are within bounds
+    dist = []
+    while(len(dist) < num_vtx):
+        extra = sp.stats.norm.rvs(loc=mean, scale=stdev, size=num_vtx-len(dist))
+        dist.extend(extra)
+        dist = filter(lambda x: not (x < 1 or x >= num_vtx), dist) # remove points out of degree bounds
+        print len(dist), num_vtx
+
+    #print len(dist), num_vtx
+    #return
     dist = map(lambda x: int(round(x)) , dist)
 
     # can't have odd sum of degrees, so add 1 to random vertex
@@ -34,20 +42,25 @@ def normal_dist_graph(mean=10, stdev=5, num_vtx=100):
         dist[i_rand] += 1
 
     needed = dist[:]
+    vtx_short = vtx[:] # "template" list for nodes to copy
 
-    print dist
     for i in xrange(len(vtx)):
-        vtx_tmp = vtx[:]
-        vtx_tmp.remove(vtx[i])
+
+        if needed[i] > 0:
+            print "%4d, needed: %d" % (i, needed[i])
+            vtx_tmp = vtx_short[:]
+            vtx_tmp.remove(vtx[i])
+        else: continue
 
         # repeat for as many nodes as needed
-        if needed[i] > 0: print "%4d, needed: %d" % (i, needed[i])
         neighbors = list(vtx[i].all_neighbours())
         for j in xrange( needed[i] ):
             if(len(vtx_tmp) > 0): dest = random.choice(vtx_tmp)
             else: print "give up 1, needed: %d" % needed[i]; break # give up; stop adding more edges
             while(dest in neighbors or needed[g.vertex_index[dest]]<=0):
                 vtx_tmp.remove(dest)
+                if(needed[g.vertex_index[dest]]<=0):
+                    vtx_short.remove(dest)
                 if(len(vtx_tmp) > 0): dest = random.choice(vtx_tmp)
                 else: print "give up 2, needed %d" % needed[i]; break # give up; use final node in `vtx_tmp`
             #print vertex_degree(dest) > dist[g.vertex_index[dest]]
