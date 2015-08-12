@@ -12,10 +12,12 @@ int seedInfection() {
     int patientZero = (rand() % (highestNode-*numVaccinated)); // index of random susceptible node
     /*int patientZero = 6;*/
     int i, curr = 0;
-    for(i = 1; i < highestNode; i++) {
+    for(i = 1; i <= highestNode; i++) {
        if(graph[i] != NULL && !graph[i]->isVaccinated) {
-           if(curr++ == patientZero)
+           if(curr++ == patientZero) {
                patientZero = i;
+               break;
+           }
        }
     }
     printf("numVaccinated: %d\n", *numVaccinated);
@@ -40,8 +42,8 @@ int infectNeighbors(Node *node, int round) {
 	Node *temp = node->next;
 
 	int newInfectious = 0;
-    int maxNum = (int)ceil(kVal * countDegree(node));
-    if(maxNum <= 0) return 0;
+	int maxNum = (int)ceil(kVal * countDegree(node));
+	if(maxNum <= 0) return 0;
 	while (temp != NULL) {
   if (graph[temp->vertexNum] != NULL && !graph[temp->vertexNum]->isInfected && !graph[temp->vertexNum]->isVaccinated) {
 			if (graph[temp->vertexNum]->isRecovered) {
@@ -68,7 +70,7 @@ int infectNeighbors(Node *node, int round) {
 				graph[temp->vertexNum]->roundInfected = round;
 				newInfectious++;
 
-                // Can only infect kVal*degree per round
+				// Can only infect kVal*degree per round
 				if (newInfectious >= maxNum) {
 					break;
 				}
@@ -122,10 +124,10 @@ void countNodes(int t, int *numInfected, int *numRecovered, int *numSusceptible,
 
 void runSimulation(char *graphName) {
 
-    // use both time (in microseconds) and PID for RNG seed
-    // from: https://stackoverflow.com/a/15846558
-    struct timeval t;
-    gettimeofday(&t, NULL);
+	// use both time (in microseconds) and PID for RNG seed
+	// from: https://stackoverflow.com/a/15846558
+	struct timeval t;
+	gettimeofday(&t, NULL);
 	srand(t.tv_usec * t.tv_sec * getpid());
 
 	fflush(stdin);
@@ -135,34 +137,51 @@ void runSimulation(char *graphName) {
      * accumulative: SI
      * reinfect: SIS
      **/
-	printf("Select simulation: [n]ormal, [a]ccumulative, or [r]einfect: ");
-	scanf(" %c", &type);
+    type = arguments.type;
+    if (type == 0) {
+        printf("Select simulation: [n]ormal, [a]ccumulative, or [r]einfect: ");
+        scanf(" %c", &type);
+    }
 
-	printf("Enter the probability of an agent to become infectious: ");
-	scanf("%f", &infectiousProbability);
+    infectiousProbability = arguments.infectiousProbability;
+    if (infectiousProbability == -1) {
+        printf("Enter the probability of an agent to become infectious: ");
+        scanf("%f", &infectiousProbability);
+    }
 
-	printf("Enter the probability of contact between agents: ");
-	scanf("%f", &contactChance);
+    contactChance = arguments.contactChance;
+    if (contactChance == -1) {
+        printf("Enter the probability of contact between agents: ");
+        scanf("%f", &contactChance);
+    }
 
 	if (infectiousProbability > 1.0 || infectiousProbability < 0.0 ||
-        contactChance > 1.0 || contactChance < 0.0) {
+		contactChance > 1.0 || contactChance < 0.0) {
 		fprintf(stderr, "Invalid probability entered. Use a number between 0 and 1\n");
 		exit(1);
 	}
 
-	printf("Enter k value (percentage of neighbors a node can infect per round): ");
-	scanf("%f", &kVal);
-
-    if (kVal > 1.0 || kVal < 0.0) {
-        fprintf(stderr, "Invalid k value: %f\nUse a number from 0 to 1.", kVal);
+    kVal = arguments.kVal;
+    if (kVal == -1) {
+        printf("Enter k value (percentage of neighbors a node can infect per round): ");
+        scanf("%f", &kVal);
     }
 
-	int simulDuration;
-	printf("How many timesteps for this simulation: ");
-	scanf("%d", &simulDuration);
+	if (kVal > 1.0 || kVal < 0.0) {
+		fprintf(stderr, "Invalid k value: %f\nUse a number from 0 to 1.", kVal);
+	}
 
-	printf("Enter the period an agent will remain infectious: ");
-	scanf("%d", &infectiousPeriod);
+	int simulDuration = arguments.simulDuration;
+    if (simulDuration == -1) {
+        printf("How many timesteps for this simulation: ");
+        scanf("%d", &simulDuration);
+    }
+
+    infectiousPeriod = arguments.infectiousPeriod;
+    if (infectiousPeriod == -1) {
+        printf("Enter the period an agent will remain infectious: ");
+        scanf("%d", &infectiousPeriod);
+    }
 
 	int *newInfectious = (int *)malloc(sizeof(int)*simulDuration);
 	int *totalInfectious = (int *)malloc(sizeof(int)*simulDuration);
@@ -170,7 +189,7 @@ void runSimulation(char *graphName) {
 	int *totalSusceptible = (int *)malloc(sizeof(int)*simulDuration);
     int *numVaccinated = (int *)malloc(sizeof(int));
 
-	memset(newInfectious,    0, sizeof(int)*simulDuration);
+	memset(newInfectious,	0, sizeof(int)*simulDuration);
 	memset(totalInfectious,  0, sizeof(int)*simulDuration);
 	memset(totalRecovered,   0, sizeof(int)*simulDuration);
 	memset(totalSusceptible, 0, sizeof(int)*simulDuration);
@@ -180,15 +199,15 @@ void runSimulation(char *graphName) {
 	///// SIMULATION /////
 
 	int i, j, zero, totalInfections = 0, numRecovered = 0, infectedRound = -1;
-    bool lastRound = false;
+	bool lastRound = false;
 	for (i = 0; i < simulDuration; i++) {
 		printf("\rPerforming timestep %d", i);
 
 		int infectionsThisRound = 0, recoveredThisRound = 0;
 		if (i == 0) {
 			zero = seedInfection();
-            infectionsThisRound++; // so that we can get 100% infection instead of 99%
-        }
+			infectionsThisRound++; // so that we can get 100% infection instead of 99%
+		}
 
 		for (j = 0; j <= highestNode; j++) {
 			if (graph[j] != NULL && (graph[j]->isRecovered || graph[j]->isVaccinated)) continue;
@@ -210,18 +229,18 @@ void runSimulation(char *graphName) {
 		bool allInfectious  = (totalInfectious[i]  == highestNode);
 		bool allRecovered   = (totalRecovered[i]   == highestNode);
 
-        if (lastRound)
-            break;
+		if (lastRound)
+			break;
 		if (allRecovered)
 			lastRound = true; // do an extra round for completeness (otherwise, infectious doesn't really reach 0 in output)
 		if (totalInfectious[i] == 0) { // stop if no disease left
-            lastRound = true;
-        }
+			lastRound = true;
+		}
 		if (allInfectious)
 			infectedRound = i;
 	}
 
-    int roundsNeeded = i;
+	int roundsNeeded = i;
 
 	///// END SIMULATION /////
 
@@ -235,7 +254,16 @@ void runSimulation(char *graphName) {
 		printf("\nAll agents were infected by round: %d\n", infectedRound);
 	}
 
-	FILE *output = fopen("web/infData.json", "w");
+    char *outfile;
+    if (strlen(arguments.outfile) == 0) {
+        outfile = "web/infData.json";
+    }
+    else {
+        outfile = (char *)malloc(strlen(arguments.outfile)+1);
+        strcpy(outfile, arguments.outfile);
+    }
+    FILE *output = fopen(outfile, "w");
+
 	if (!output) {
 		fprintf(stderr, "Could not open output file\n");
 		exit(1);
@@ -249,7 +277,7 @@ void runSimulation(char *graphName) {
 	fprintf(output, "\t\"infectionCount\": %d,\n", totalInfections);
 	fprintf(output, "\t\"patientZero\": %d,\n", zero);
 	fprintf(output, "\t\"simulDuration\": %d,\n", simulDuration);
-    fprintf(output, "\t\"roundsNeeded\": %d,\n", roundsNeeded);
+	fprintf(output, "\t\"roundsNeeded\": %d,\n", roundsNeeded);
 	fprintf(output, "\t\"infectionChance\": %f,\n", infectiousProbability);
 	fprintf(output, "\t\"contactChance\": %f,\n", contactChance);
 	fprintf(output, "\t\"infectionPeriod\": %d,\n", infectiousPeriod);
@@ -263,8 +291,8 @@ void runSimulation(char *graphName) {
 	fprintf(output, "\t\"values\": [\n");
 	for (j = 0; j < i; j++) {
 		fprintf(output, "\t\t{\"x\": %d, \"y\": %d}", j, newInfectious[j]);
-        if(j < i-1) fprintf(output, ",");
-        fprintf(output, "\n");
+		if(j < i-1) fprintf(output, ",");
+		fprintf(output, "\n");
 	}
 	fprintf(output, "\t],\n");
 
@@ -272,8 +300,8 @@ void runSimulation(char *graphName) {
 	fprintf(output, "\t\"numInf\": [\n");
 	for (j = 0; j < i; j++) {
 		fprintf(output, "\t\t{\"x\": %d, \"y\": %d}", j, totalInfectious[j]);
-        if(j < i-1) fprintf(output, ",");
-        fprintf(output, "\n");
+		if(j < i-1) fprintf(output, ",");
+		fprintf(output, "\n");
 	}
 	fprintf(output, "\t],\n");
 
@@ -281,8 +309,8 @@ void runSimulation(char *graphName) {
 	fprintf(output, "\t\"numRec\": [\n");
 	for (j = 0; j < i; j++) {
 		fprintf(output, "\t\t{\"x\": %d, \"y\": %d}", j, totalRecovered[j]);
-        if(j < i-1) fprintf(output, ",");
-        fprintf(output, "\n");
+		if(j < i-1) fprintf(output, ",");
+		fprintf(output, "\n");
 	}
 	fprintf(output, "\t],\n");
 
@@ -290,8 +318,8 @@ void runSimulation(char *graphName) {
 	fprintf(output, "\t\"numSus\": [\n");
 	for (j = 0; j < i; j++) {
 		fprintf(output, "\t\t{\"x\": %d, \"y\": %d}", j, totalSusceptible[j]);
-        if(j < i-1) fprintf(output, ",");
-        fprintf(output, "\n");
+		if(j < i-1) fprintf(output, ",");
+		fprintf(output, "\n");
 	}
 	fprintf(output, "\t]\n");
 
@@ -302,5 +330,5 @@ void runSimulation(char *graphName) {
 	free(totalRecovered);
 
 	fclose(output);
-	printf("\nPer round results written to \"results.txt\"\n");
+	printf("\nPer round results written to \"%s\"\n", outfile);
 }
