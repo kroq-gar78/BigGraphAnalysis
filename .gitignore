@@ -10,3 +10,5 @@ results.txt
 tests
 
 *.pyc
+
+*.dat

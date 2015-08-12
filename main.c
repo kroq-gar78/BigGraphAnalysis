@@ -7,7 +7,7 @@ static char doc[] = "Graph reader and SIR model -- analyze graphs and run SIR ep
 static char args_doc[] = "ARG1 ARG2";
 // in order: {NAME, KEY, ARG, FLAGS, DOC}
 // TODO: specify output file (-o)
-static struct argp_option options[] = 
+static struct argp_option options[] =
 {
     {"analyze", 'a', 0, 0, "Produce a degree distribution of the graph"},
     {"output",  'o', "FILE", 0, "Use FILE instead of 'web/data.json' or 'web/infData.json'. Note that data in 'web/' is not changed, so JavaScript graphs aren't updated."},
@@ -39,10 +39,10 @@ static error_t parse_opt(int key, char *arg, struct argp_state *state) {
             arguments->infectiousProbability = (float)atof(arg);
             break;
         case 'c':
-            arguments->contactChance = (float)atof(arg); 
+            arguments->contactChance = (float)atof(arg);
             break;
         case 'k':
-            arguments->kVal = atoi(arg);
+            arguments->kVal = atof(arg);
             break;
         case 'p':
             arguments->infectiousPeriod = atoi(arg);

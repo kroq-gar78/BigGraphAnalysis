@@ -35,7 +35,7 @@ struct arguments {
     char type;
     float infectiousProbability;
     float contactChance;
-    int kVal;
+    float kVal;
     int infectiousPeriod;
     int simulDuration;
 };
