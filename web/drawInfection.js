@@ -91,7 +91,7 @@ $(document).ready(function() {
 	for (var i = 0; i < Math.min(maxXKeys, data.values.length); i++) {
 		if (data.values[i*step] != undefined)
 			c.fillText(data.values[i*step].x, getXPixel(i*step), graph.height() - yPadding + 20);
-	}	
+	}
 
 	// Draw y keys
 	step = getMaxY() / maxYKeys;
@@ -229,7 +229,7 @@ function drawSIRGraph() {
 	for (var i = 0; i < Math.min(maxXKeys, data.numInf.length); i++) {
 		if (data.numInf[i*step] != undefined)
 			c.fillText(data.numInf[i*step].x, sirGetXPixel(i*step), graph.height() - yPadding + 20);
-	}	
+	}
 
 	// Draw y keys
 	step = sirGetMaxY() / maxYKeys;

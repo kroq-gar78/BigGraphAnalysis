@@ -3,7 +3,7 @@
 
 int infectiousPeriod;
 float contactChance;
-int kVal;
+float kVal;
 
 char type;
 
@@ -34,12 +34,14 @@ int infectNeighbors(Node *node, int round) {
 
 	if (type == 'a') {
 		if (round - (node->roundInfected+1) >= infectiousPeriod)
-			return 0;	
+			return 0;
 	}
 
 	Node *temp = node->next;
 
 	int newInfectious = 0;
+    int maxNum = (int)ceil(kVal * countDegree(node));
+    if(maxNum <= 0) return 0;
 	while (temp != NULL) {
   if (graph[temp->vertexNum] != NULL && !graph[temp->vertexNum]->isInfected && !graph[temp->vertexNum]->isVaccinated) {
 			if (graph[temp->vertexNum]->isRecovered) {
@@ -66,8 +68,9 @@ int infectNeighbors(Node *node, int round) {
 				graph[temp->vertexNum]->roundInfected = round;
 				newInfectious++;
 
-				if (newInfectious >= kVal) {
-					break; // Can only infect kVal per round
+                // Can only infect kVal*degree per round
+				if (newInfectious >= maxNum) {
+					break;
 				}
 			}
 		}
@@ -118,7 +121,12 @@ void countNodes(int t, int *numInfected, int *numRecovered, int *numSusceptible,
 }
 
 void runSimulation(char *graphName) {
-	srand(time(NULL));
+
+    // use both time (in microseconds) and PID for RNG seed
+    // from: https://stackoverflow.com/a/15846558
+    struct timeval t;
+    gettimeofday(&t, NULL);
+	srand(t.tv_usec * t.tv_sec * getpid());
 
 	fflush(stdin);
 
@@ -142,11 +150,12 @@ void runSimulation(char *graphName) {
 		exit(1);
 	}
 
-	printf("Enter k value (Max # a node may infect per round, 0 for no limit): ");
-	scanf("%d", &kVal);
+	printf("Enter k value (percentage of neighbors a node can infect per round): ");
+	scanf("%f", &kVal);
 
-	if (kVal == 0)
-		kVal = highestNode;
+    if (kVal > 1.0 || kVal < 0.0) {
+        fprintf(stderr, "Invalid k value: %f\nUse a number from 0 to 1.", kVal);
+    }
 
 	int simulDuration;
 	printf("How many timesteps for this simulation: ");
@@ -178,7 +187,7 @@ void runSimulation(char *graphName) {
 		int infectionsThisRound = 0, recoveredThisRound = 0;
 		if (i == 0) {
 			zero = seedInfection();
-            infectionsThisRound++; // so that we can get 100% infection instead of 99% 
+            infectionsThisRound++; // so that we can get 100% infection instead of 99%
         }
 
 		for (j = 0; j <= highestNode; j++) {
@@ -206,7 +215,7 @@ void runSimulation(char *graphName) {
 		if (allRecovered)
 			lastRound = true; // do an extra round for completeness (otherwise, infectious doesn't really reach 0 in output)
 		if (totalInfectious[i] == 0) { // stop if no disease left
-            lastRound = true; 
+            lastRound = true;
         }
 		if (allInfectious)
 			infectedRound = i;
@@ -244,7 +253,7 @@ void runSimulation(char *graphName) {
 	fprintf(output, "\t\"infectionChance\": %f,\n", infectiousProbability);
 	fprintf(output, "\t\"contactChance\": %f,\n", contactChance);
 	fprintf(output, "\t\"infectionPeriod\": %d,\n", infectiousPeriod);
-	fprintf(output, "\t\"kVal\": %d,\n", kVal);
+	fprintf(output, "\t\"kVal\": %f,\n", kVal);
 
 	if (isAllInfected) {
 		fprintf(output, "\t\"endStep\": %d,\n", infectedRound);

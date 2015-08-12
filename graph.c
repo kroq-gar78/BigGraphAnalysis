@@ -15,7 +15,7 @@ Node *createNode(int vertexNum) {
 	newNode->roundInfected = -1;
 	newNode->roundRecovered = -1;
 	newNode->next = NULL;
-	
+
 	return newNode;
 }
 
@@ -40,7 +40,7 @@ void connectNode(int src, int dest) {
 
 	Node *temp = graph[src];
 	Node *newNode;
-	
+
 	if (!checkConnection(temp, dest)) {
 		while (temp->next != NULL)
 			temp = temp->next;
@@ -56,7 +56,7 @@ void connectNode(int src, int dest) {
 	}
 
 	temp = graph[dest];
-	
+
 	if (!checkConnection(temp, src)) {
 		while (temp->next != NULL)
 			temp = temp->next;
@@ -82,7 +82,7 @@ int countDegree(Node *node) {
 	return count;
 }
 
-void writeDegreeDistribution(int highestDegNum, int lowestDegNum, 
+void writeDegreeDistribution(int highestDegNum, int lowestDegNum,
 	double avgDegree, char *filename) {
 	int numDataPoints = highestNode;
 	int step = 1;
@@ -136,7 +136,7 @@ void writeDegreeDistribution(int highestDegNum, int lowestDegNum,
 		variance += val;
 	}
 }
-	
+
 	variance /= highestNode;
 	double standardDev = sqrt(variance);
 	printf("Standard deviation is: %lf\n", standardDev);
@@ -247,7 +247,7 @@ void readGraph(const char *filename) {
 	}
 
 	char buffer[256];
-	
+
 	while ((fgets(buffer, 256, f)) != NULL) {
 		char *tok = strtok(buffer, " \t");
 		int nodeNum = atoi(tok);

@@ -11,3 +11,5 @@ output/
 tests
 
 *.pyc
+
+*.dat
