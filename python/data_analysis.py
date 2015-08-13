@@ -99,23 +99,24 @@ def norm_unvacc(data_graph, stages=['sus','inf','rec','newinf']):
     #return graph_peaks_highest
 
 if __name__=="__main__":
-    methods=["deg","ev","pr"]
+    methods=["deg","ev","pr", "rnd"]
     #vals=[20,40,60,80]
-    vals=range(0,100,10)
+    vacc_rates = [10, 20, 30, 35, 40, 45, 50, 55, 60, 70, 80, 90]
 
-    graph1_dir = "output/2015-08-07_graph1"
+    graph1_dir = "../output/2015-08-12T17-48-39"
     data_graph1 = {}
     for method in methods:
         #print files
-        data_graph1[method] = [None]*len(vals)
-        for i in xrange(len(vals)):
-            files = glob(graph1_dir+"/"+method+"_"+str(vals[i])+"*.json")
-            #print files, graph1_dir+"/"+method+"_"+str(vals[i])+"*.json"
+        data_graph1[method] = [None]*len(vacc_rates)
+        for i in xrange(len(vacc_rates)):
+            files = glob(graph1_dir+"/"+method+"_"+str(vacc_rates[i])+"*.json")
+            #print len(files), map(lambda x: x[x.rfind("/"):], sorted(files))
             data_graph1[method][i] = [None]*len(files)
             for j in xrange(len(files)):
                 #print files[j]
                 data_graph1[method][i][j] = load_infData(files[j])
 
+    exit(0)
     graph2_dir = "output/2015-08-07_graph2"
     data_graph2 = {}
     for method in methods:
