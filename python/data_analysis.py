@@ -51,6 +51,24 @@ def get_peaks_avg(peaks, stages=['sus','inf','rec','newinf']):
 def get_peaks_highest(peaks, stages=['sus','inf','rec','newinf']):
     return peaks_condense_trials(peaks, max, stages)
 
+# Normalize everything by the number of non-vaccinated individuals.
+# Requires 'sus', 'inf', and 'rec' (this one is optional) stages to calculate
+# total unvaccinated population.
+def norm_unvacc(data_graph, stages=['sus','inf','rec','newinf']):
+    normalized = {}
+    for method in data_graph.iterkeys():
+        normalized[method] = [None]*len(data_graph[method])
+        for i, vacc_rate in enumerate(data_graph[method]): # vaccination rates
+            normalized[method][i] = [None]*len(vacc_rate)
+            for j, trial in enumerate(data_graph[method][i]): # iterations
+                normalized[method][i][j] = {}
+                unvaccinated = trial['sus'][0,1] + trial['inf'][0,1]
+                if 'rec' in trial: unvaccinated += trial['rec'][0,1]
+                for stage in stages:
+                    normalized[method][i][j][stage] = trial[stage].astype(float)
+                    normalized[method][i][j][stage] /= unvaccinated
+    return normalized
+
 #def get_peaks_avg(data_graph):
     #graph_peaks_avg = {}
     #stages = ['sus','inf','rec','newinf']
