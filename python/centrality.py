@@ -3,6 +3,7 @@
 from graph_tool.all import *
 import numpy as np
 import scipy as sp
+import numpy.random
 
 def cen_degree(g):
     return g.degree_property_map("total").a.astype(float) / (g.num_vertices() - 1)
@@ -18,6 +19,10 @@ def cen_pagerank(g):
 
 def cen_eigentrust(g):
     return eigentrust(g).a
+
+# use this as a "control group"
+def cen_random(g):
+    return np.random.random(size=g.num_vertices())
 
 # get the 'n' largest elements and return their indecies
 def nlargest_idx(a, n):

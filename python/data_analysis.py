@@ -46,10 +46,10 @@ def get_peaks_avg(peaks, stages=['sus','inf','rec','newinf']):
             #for stage in stages:
                 #graph_peaks_avg[method][i][stage] = np.mean([x[stage] for x in vacc_rate])
     #return graph_peaks_avg
-    return peaks_condense(peaks, np.mean, stages)
+    return peaks_condense_trials(peaks, np.mean, stages)
 
 def get_peaks_highest(peaks, stages=['sus','inf','rec','newinf']):
-    return peaks_condense(peaks, max, stages)
+    return peaks_condense_trials(peaks, max, stages)
 
 #def get_peaks_avg(data_graph):
     #graph_peaks_avg = {}
