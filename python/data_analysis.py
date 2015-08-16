@@ -98,34 +98,58 @@ def norm_unvacc(data_graph, stages=['sus','inf','rec','newinf']):
 
     #return graph_peaks_highest
 
+# Load all data for a particular set of runs/experiments.
+# This can/will be changed very frequently (i.e. as necessary by experiment).
+# Current structure is data_graph[methods][vacc_rates][trials][stages]
+def load_all_data(data_dir, vacc_rates, methods=["deg","ev","pr","rnd"]):
+    data_graph = {}
+    for method in methods:
+        #print files
+        data_graph[method] = [None]*len(vacc_rates)
+        for i in xrange(len(vacc_rates)):
+            files = glob(data_dir+"/"+method+"_"+str(vacc_rates[i])+"*.json")
+            #print len(files), map(lambda x: x[x.rfind("/"):], sorted(files))
+            data_graph[method][i] = [None]*len(files)
+            for j in xrange(len(files)):
+                #print files[j]
+                data_graph[method][i][j] = load_infData(files[j])
+
+    return data_graph
+
 if __name__=="__main__":
     methods=["deg","ev","pr", "rnd"]
     #vals=[20,40,60,80]
     vacc_rates = [10, 20, 30, 35, 40, 45, 50, 55, 60, 70, 80, 90]
 
-    graph1_dir = "../output/2015-08-12T17-48-39"
-    data_graph1 = {}
-    for method in methods:
-        #print files
-        data_graph1[method] = [None]*len(vacc_rates)
-        for i in xrange(len(vacc_rates)):
-            files = glob(graph1_dir+"/"+method+"_"+str(vacc_rates[i])+"*.json")
-            #print len(files), map(lambda x: x[x.rfind("/"):], sorted(files))
-            data_graph1[method][i] = [None]*len(files)
-            for j in xrange(len(files)):
-                #print files[j]
-                data_graph1[method][i][j] = load_infData(files[j])
+    data_graph1 = load_all_data("../output/norm_100000_m6_s4", vacc_rates)
+    data_graph2 = load_all_data("../output/ring_100000_m6", vacc_rates)
+    data_graph3 = load_all_data("../output/norm_100000_m16_s4", vacc_rates)
 
-    exit(0)
-    graph2_dir = "output/2015-08-07_graph2"
-    data_graph2 = {}
-    for method in methods:
-        data_graph2[method] = [None]*len(vals)
-        for i in xrange(len(vals)):
-            files = glob(graph2_dir+"/"+method+"_"+str(vals[i])+"*.json")
-            data_graph2[method][i] = [None]*len(files)
-            for j in xrange(len(files)):
-                data_graph2[method][i][j] = load_infData(files[j])
+    #graph1_dir = "../output/norm_100000_m6_s4"
+    #data_graph1 = {}
+    #for method in methods:
+        ##print files
+        #data_graph1[method] = [None]*len(vacc_rates)
+        #for i in xrange(len(vacc_rates)):
+            #files = glob(graph1_dir+"/"+method+"_"+str(vacc_rates[i])+"*.json")
+            ##print len(files), map(lambda x: x[x.rfind("/"):], sorted(files))
+            #data_graph1[method][i] = [None]*len(files)
+            #for j in xrange(len(files)):
+                ##print files[j]
+                #data_graph1[method][i][j] = load_infData(files[j])
+
+    #graph2_dir = "../output/ring_100000_m6"
+    #data_graph2 = {}
+    #for method in methods:
+        ##print files
+        #data_graph2[method] = [None]*len(vacc_rates)
+        #for i in xrange(len(vacc_rates)):
+            #files = glob(graph2_dir+"/"+method+"_"+str(vacc_rates[i])+"*.json")
+            ##print len(files), map(lambda x: x[x.rfind("/"):], sorted(files))
+            #data_graph2[method][i] = [None]*len(files)
+            #for j in xrange(len(files)):
+                ##print files[j]
+                #data_graph2[method][i][j] = load_infData(files[j])
 
     # get the peaks for each run (for both graphs)
     #graph1_peaks = get_peaks(data_graph1)
