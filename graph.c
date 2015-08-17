@@ -13,9 +13,10 @@ Node *createNode(int vertexNum) {
 	newNode->isRecovered = false;
 	newNode->roundInfected = -1;
 	newNode->roundRecovered = -1;
+
 	newNode->next1 = NULL;
     newNode->next2 = NULL;
-	
+
 	return newNode;
 }
 
@@ -43,7 +44,7 @@ void connectNode(int src, int dest, int graphNum) {
 
 	Node *temp = graph[src];
 	Node *newNode;
-	
+
 	if (!checkConnection(temp, dest, graphNum)) {
         if (graphNum == 1)
             while (temp->next1 != NULL)
@@ -63,7 +64,7 @@ void connectNode(int src, int dest, int graphNum) {
 	}
 
 	temp = graph[dest];
-	
+
 	if (!checkConnection(temp, src, graphNum)) {
         if (graphNum == 1)
             while (temp->next1 != NULL)
@@ -99,12 +100,21 @@ int countDegree(Node *node, int graphNum) {
 	return count;
 }
 
-void writeDegreeDistribution(int highestDegNum, int lowestDegNum, 
-	int avgDegree, char *filename, int graphNum) {
+void writeDegreeDistribution(int highestDegNum, int lowestDegNum,
+	double avgDegree, char *filename, int graphNum) {
 	int numDataPoints = highestNode;
 	int step = 1;
 
-	FILE *f = fopen("web/data.json", "w");
+    //FILE *f;
+    char *outfile;
+    if (strlen(arguments.outfile) == 0) {
+        outfile = "web/data.json";
+    }
+    else {
+        outfile = (char *)malloc(strlen(arguments.outfile)+1);
+        strcpy(outfile, arguments.outfile);
+    }
+    FILE *f = fopen(outfile, "w");
 
 	if (!f) {
 		fprintf(stderr, "Unable to open output file\n");
@@ -153,7 +163,7 @@ void writeDegreeDistribution(int highestDegNum, int lowestDegNum,
 		variance += val;
 	}
 }
-	
+
 	variance /= highestNode;
 	double standardDev = sqrt(variance);
 	printf("Standard deviation is: %lf\n", standardDev);
@@ -164,7 +174,7 @@ void writeDegreeDistribution(int highestDegNum, int lowestDegNum,
 	fprintf(f, "\t\"edgeCount\": %d,\n", edgeCount);
 	fprintf(f, "\t\"highestDeg\": %d,\n", highestDegNum);
 	fprintf(f, "\t\"lowestDeg\": %d,\n", lowestDegNum);
-	fprintf(f, "\t\"avgDeg\": %d,\n", avgDegree);
+	fprintf(f, "\t\"avgDeg\": %lf,\n", avgDegree);
 	fprintf(f, "\t\"standardDev\": %lf,\n", standardDev);
 	fprintf(f, "\t\"values\": [\n");
 
@@ -174,8 +184,8 @@ void writeDegreeDistribution(int highestDegNum, int lowestDegNum,
 		}
 
 		fprintf(f, "\t\t{\"x\": %d, \"y\": %d}", i, distribution[i]);
-        if(i < highestDegNum) fprintf(f, ",");
-        fprintf(f, "\n");
+		if(i < highestDegNum) fprintf(f, ",");
+		fprintf(f, "\n");
 	}
 
 	fprintf(f, "\t]\n");
@@ -184,7 +194,7 @@ void writeDegreeDistribution(int highestDegNum, int lowestDegNum,
 	fclose(f);
 	free(distribution);
 
-	printf("Data written as \"web/data.json\"\n");
+	printf("Data written as \"%s\"\n", outfile);
 
 }
 
@@ -265,15 +275,15 @@ void readGraph(const char *filename, int graphNum) {
 	}
 
 	char buffer[256];
-	
+
 	while ((fgets(buffer, 256, f)) != NULL) {
-		char *tok = strtok(buffer, " ");
+		char *tok = strtok(buffer, " \t");
 		int nodeNum = atoi(tok);
 
 		if (nodeNum > highestNode)
 			highestNode = nodeNum;
 
-		tok = strtok(NULL, " ");
+		tok = strtok(NULL, " \t");
 		nodeNum = atoi(tok);
 
 		if (nodeNum > highestNode)
@@ -282,6 +292,7 @@ void readGraph(const char *filename, int graphNum) {
 	}
 
     // assuming that graph 1 is read before graph 2
+    // the graph itself does not change (only adjacency lists)
     if (graphNum == 1)
     {
         graph = (Node **)malloc(sizeof(Node *)*highestNode+1);
@@ -291,9 +302,9 @@ void readGraph(const char *filename, int graphNum) {
 	rewind(f);
 
 	while ((fgets(buffer, 256, f)) != NULL) {
-		char *tok = strtok(buffer, " ");
+		char *tok = strtok(buffer, " \t");
 		int src = atoi(tok);
-		tok = strtok(NULL, " ");
+		tok = strtok(NULL, " \t");
 		int dest = atoi(tok);
 
 		connectNode(src, dest, graphNum);

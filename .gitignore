@@ -7,6 +7,9 @@ Graph_Xcode
 web/data.json
 web/infData.json
 results.txt
+output/
 tests
 
 *.pyc
+
+*.dat

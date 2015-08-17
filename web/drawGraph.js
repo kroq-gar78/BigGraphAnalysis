@@ -44,13 +44,13 @@ $(document).ready(function() {
 	graph = $('#graph');
 	var c = graph[0].getContext('2d');
 
-    // load data
-    $.ajax({
-        dataType: "json",
-        url: "data.json",
-        async: false,
-        success: function(response) {data = response;}
-    });
+	// load data
+	$.ajax({
+		dataType: "json",
+		url: "data.json",
+		async: false,
+		success: function(response) {data = response;}
+	});
 
 	var oldFill = c.fillStyle;
 

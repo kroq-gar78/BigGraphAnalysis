@@ -1,0 +1,43 @@
+Infection Simulator for use with Undirected Graphs
+==================================================
+
+This simulator reads an undirected graph from a text file and presents the user with options to analyze the graph or run a simulation of infection. The text files containing the graphs are expected to be in this form:
+
+    sourceNode destNode weight
+
+The weight parameter is unused in this implementation and is optional. Leaving it out will have no effect on the program. The program will also automatically create an undirected representation of the graph and does not need edges defined for both directions. For example:
+
+    3 7 1
+
+is the same as:
+
+    3 7 1
+    7 3 1
+
+meaning that node 3 is connected to 7, which implies node 7 is connected to node 3. The internal representation of the graphs is similar to an adjaceny list. The program maintains an array of all nodes. Each spot in that array is a linked list which contains all connected nodes to that node.
+
+### Graph Analysis
+
+After the graph is read from the file, the user may choose to analyze the graph, or run a simulation. If the user chooses to analyze the graph, the program will then perfrom a series of tests. The graph will calculate the number of nodes and edges contained in the graph. It will then count the degree (number of neighbors) of each node and calulate some statistics based on these numbers. The program will output the highest, lowest, and average degree and calculate the standard deviation of the distribution. It will also output a javascript file containing the distribution data points calculated by the program. The user can then open the `index.html` file in the web directory which will show a line graph detailing the distribution of degrees.
+
+### Infection simulation
+
+If the user instead chooses to run a simulation on the graph they will then be asked to input some parameters. They will first be asked to select a simulation type. Here are the options:
+
+* **Normal:** The Infection will run normally where infected individuals are infected for the given period of time and then become recovered where they are no longer able to be infected.
+* **Accumulative:** When an individual becomes infected, they will stay infected for the duration of the simulation. However, after the infectious period, they will not be able to infect others.
+* **Reinfecct**: After the infectious period ends, an individual will return to the susceptible state and will be able to be infected again. There is no recovered state in this simulation.
+
+The program implements a basic SIR simulation. SIR stands for Susceptible, Infectious, Recovered. Generally, all agents (or nodes in the graph) start in the susceptible state. Meaning they have not been infected and are susceptible to the infection. We then select one node to seed the infection and change their state to infectious. At each timestep in the simulation, an infectious individual will try to infect their neighbors who are susceptible to the infection. If they succeed, that individual will change to the infectious state. After a given period of time called the "infectious period" an infectious agent will change to the recovered state (given this is allowed in the type of simulation). In this state, the agent will not be able to infect others anymore and they cannot be infected again.
+
+After selecting the simulation type, the user will enter the parameters of the simulation.
+
+* **Infectious Probability:** The % chance an agent will become infectious
+* **Contact Probability:** The % chance two agents will come in contact with each other
+* **K value:** How many nodes an agent may infect per timestep
+* **Simulation Duration:** How many timesteps to run the simulation for
+* **Infectious Period:** How long an agent will remain infectious
+
+After entering these parameters, the simlation will run and output a javascript file containing the results. If the user opens the `infection.html` file in the web directory, they will see the results along with some line graphs showing how the infection spread over time.
+
+The method in which the simulation is run is simple. For each timestep we loop over all the agents in the graph. If the agent is infectious we try to infect its neighbors. This is done by looping over the agent's neighbors and using a random chance based on the "infectious probability" to try and infect the agent's uninfected neighbors. Checking for recovery is also simple. Each timestep for an infected agent we simply compare the current round with the round the agent was infected and see if this is equal to the "infectious period". In that case, we change the agent's state to recovered (if allowed by the simulation type).
