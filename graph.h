@@ -23,6 +23,7 @@ typedef struct Node_t {
 
 	bool isInfected;
 	bool isRecovered;
+	bool isVaccinated;
 	int roundInfected;
 	int roundRecovered;
 
@@ -32,6 +33,7 @@ extern const char *argp_program_version; // is this safe?
 struct arguments {
     char *graph_path;
     char *graph_path2;
+    char *vacc_path;
     char *outfile;
     char action;
     char type;
@@ -48,8 +50,10 @@ Node **graph;
 float infectiousProbability;
 int highestNode;
 int edgeCount;
+int *numVaccinated;
 
 void readGraph(const char *filename, int graphNum);
+void readVaccinated(const char *filename);
 int countDegree(Node *node, int graphNum);
 bool checkConnection(Node *srcNode, int dest, int graphNum);
 

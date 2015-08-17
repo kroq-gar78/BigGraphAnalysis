@@ -7,8 +7,20 @@ float kVal;
 
 char type;
 
+// infect the first susceptible node
 int seedInfection() {
-	int patientZero = (rand() % highestNode)+1; // compensate for 1-based indeces
+    int patientZero = (rand() % (highestNode-*numVaccinated)); // index of random susceptible node
+    /*int patientZero = 6;*/
+    int i, curr = 0;
+    for(i = 1; i <= highestNode; i++) {
+       if(graph[i] != NULL && !graph[i]->isVaccinated) {
+           if(curr++ == patientZero) {
+               patientZero = i;
+               break;
+           }
+       }
+    }
+    printf("numVaccinated: %d\n", *numVaccinated);
 
 	graph[patientZero]->isInfected = true;
 	graph[patientZero]->roundInfected = 0;
@@ -35,7 +47,7 @@ int infectNeighbors(Node *node, int round, int graphNum) {
 	int maxNum = (int)ceil(kVal * countDegree(node, graphNum));
 	if(maxNum <= 0) return 0;
 	while (temp != NULL) {
-		if (graph[temp->vertexNum] != NULL && !graph[temp->vertexNum]->isInfected) {
+  if (graph[temp->vertexNum] != NULL && !graph[temp->vertexNum]->isInfected && !graph[temp->vertexNum]->isVaccinated) {
 			if (graph[temp->vertexNum]->isRecovered) {
 				temp->isRecovered = true;
 				if (graphNum == 1) temp = temp->next1;
@@ -95,22 +107,24 @@ bool checkRecovery(Node *node, int round) {
 }
 
 
-void countNodes(int t, int *numInfected, int *numRecovered, int *numSusceptible) {
+void countNodes(int t, int *numInfected, int *numRecovered, int *numSusceptible, int *numVaccinated) {
 	int i = 0;
-	int tmp_infected = 0, tmp_recovered = 0, tmp_susceptible = 0;
-	//#pragma omp parallel for private(i) shared(graph, highestNode) reduction(+:tmp_infected, tmp_recovered, tmp_susceptible) //schedule(dynamic, 100)
-	// might need large chunks for speedup (currently no speedup with parallel)
+    int tmp_infected = 0, tmp_recovered = 0, tmp_susceptible = 0, tmp_vaccinated = 0;
+    //#pragma omp parallel for private(i) shared(graph, highestNode) reduction(+:tmp_infected, tmp_recovered, tmp_susceptible) //schedule(dynamic, 100)
+    // might need large chunks for speedup (currently no speedup with parallel)
 	for (i = 0; i <= highestNode; i++) {
 		if(graph[i] != NULL) {
-			if(graph[i]->isInfected) tmp_infected++;
-			else if(graph[i]->isRecovered) tmp_recovered++;
-			else tmp_susceptible++;
+            if(graph[i]->isInfected) tmp_infected++;
+            else if(graph[i]->isRecovered) tmp_recovered++;
+            else if(graph[i]->isVaccinated) tmp_vaccinated++;
+            else tmp_susceptible++;
 		}
 	}
 
-	numInfected[t] = tmp_infected;
-	numRecovered[t] = tmp_recovered;
-	numSusceptible[t] = tmp_susceptible;
+    numInfected[t] = tmp_infected;
+    numRecovered[t] = tmp_recovered;
+    numSusceptible[t] = tmp_susceptible;
+    *numVaccinated = tmp_vaccinated;
 }
 
 void runSimulation(char *graphName) {
@@ -178,6 +192,7 @@ void runSimulation(char *graphName) {
 	int *totalInfectious = (int *)malloc(sizeof(int)*simulDuration);
 	int *totalRecovered = (int *)malloc(sizeof(int)*simulDuration);
 	int *totalSusceptible = (int *)malloc(sizeof(int)*simulDuration);
+    int *numVaccinated = (int *)malloc(sizeof(int));
 
 	memset(newInfectious,	0, sizeof(int)*simulDuration);
 	memset(totalInfectious,  0, sizeof(int)*simulDuration);
@@ -202,7 +217,7 @@ void runSimulation(char *graphName) {
 		}
 
 		for (j = 0; j <= highestNode; j++) {
-			if (graph[j] != NULL && graph[j]->isRecovered) continue;
+			if (graph[j] != NULL && (graph[j]->isRecovered || graph[j]->isVaccinated)) continue;
 
 			if (checkRecovery(graph[j], i))
 				recoveredThisRound++;
@@ -210,8 +225,8 @@ void runSimulation(char *graphName) {
 			if (graph[j] != NULL && graph[j]->isInfected)
 				infectionsThisRound += infectNeighbors(graph[j], i, graphNum);
 		}
-
-		countNodes(i, totalInfectious, totalRecovered, totalSusceptible);
+		
+		countNodes(i, totalInfectious, totalRecovered, totalSusceptible, numVaccinated);
 
 		newInfectious[i] = infectionsThisRound;
 		totalInfections	+= infectionsThisRound;
@@ -265,6 +280,7 @@ void runSimulation(char *graphName) {
 	fprintf(output, "\t\"name\": \"%s\",\n", graphName);
 	fprintf(output, "\t\"nodeCount\": %d,\n", highestNode);
 	fprintf(output, "\t\"edgeCount\": %d,\n", edgeCount);
+    fprintf(output, "\t\"numVaccinated\": %d,\n", *numVaccinated);
 	fprintf(output, "\t\"infectionCount\": %d,\n", totalInfections);
 	fprintf(output, "\t\"patientZero\": %d,\n", zero);
 	fprintf(output, "\t\"simulDuration\": %d,\n", simulDuration);

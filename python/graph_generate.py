@@ -84,8 +84,9 @@ def ring(num_vtx=100, k=2, p=0.0):
 
     # connect neighbors
     for i in vtx:
-        for j in xrange(1,k+1):
-            dest = g.vertex( (g.vertex_index[i]-j)%num_vtx )
+        for j in xrange(-k,k+1):
+            if j==0: continue
+            dest = g.vertex( (g.vertex_index[i]+j)%num_vtx )
             if(g.edge(i,dest) is None):
                 g.add_edge(i,dest)
 

@@ -144,7 +144,8 @@ $(document).ready(function() {
 	infoElem.html('<strong>Graph Name:</strong> ' + data.name
 			+ '<br><strong>Node Count:</strong> ' + data.nodeCount.toLocaleString()
 			+ '<br><strong>Edge Count:</strong> ' + data.edgeCount.toLocaleString()
-			+ '<br><strong>Total Infected:</strong> ' + data.infectionCount.toLocaleString() + "/" + data.nodeCount.toLocaleString()
+            + '<br><strong>Number Vaccinated:</strong> ' + data.numVaccinated.toLocaleString()
+			+ '<br><strong>Total Infected:</strong> ' + data.infectionCount.toLocaleString() + "/" + data.nodeCount.toLocaleString() 
 			+ ' (' + ((data.infectionCount/data.nodeCount)*100).toFixed(2) + '%)'
 			+ '<br><strong>Patient Zero:</strong> ' + data.patientZero.toLocaleString()
 			+ '<br><strong>Chance of Infection:</strong> ' + (data.infectionChance * 100) + '%'

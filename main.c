@@ -20,12 +20,16 @@ static struct argp_option options[] =
     {"kval",     'k', "k",    0, "Maximum number of neighbors an infected node may infect"},
     {"infecttime",'p',"steps",0, "Infectious period; how long a node stays infected once infected"},
     {"duration", 'd', "steps",0, "Maximum number of time steps"},
+    {"vaccine",  'v', "FILE", 0, "File containing list of vaccinated nodes"},
     {0}
 };
 static error_t parse_opt(int key, char *arg, struct argp_state *state) {
     struct arguments *arguments = state->input;
 
     switch(key) {
+        case 'v':
+            arguments->vacc_path = arg;
+            break;
         case 'o':
             arguments->outfile = arg;
             break;
@@ -73,6 +77,7 @@ int main(int argc, char **argv) {
 
     // define defaults
     arguments.graph_path2 = "";
+    arguments.vacc_path = "";
     arguments.outfile = "";
     arguments.action = 0;
     arguments.type = 0;
@@ -97,8 +102,10 @@ int main(int argc, char **argv) {
 	t1 = clock();
 
 	readGraph(arguments.graph_path, 1);
-    if (strlen(arguments.graph_path2) != 0) readGraph(arguments.graph_path2, 2);
+    if (strlen(arguments.graph_path2) > 0) readGraph(arguments.graph_path2, 2);
     else readGraph(arguments.graph_path, 2);
+
+    if (strlen(arguments.vacc_path) > 0) readVaccinated(arguments.vacc_path);
 
 	t1 = clock() - t1; // Done reading
 	t2 = clock();

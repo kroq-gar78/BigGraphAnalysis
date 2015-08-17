@@ -11,6 +11,7 @@ Node *createNode(int vertexNum) {
 	newNode->vertexNum = vertexNum;
 	newNode->isInfected = false;
 	newNode->isRecovered = false;
+	newNode->isVaccinated = false;
 	newNode->roundInfected = -1;
 	newNode->roundRecovered = -1;
 
@@ -295,8 +296,10 @@ void readGraph(const char *filename, int graphNum) {
     // the graph itself does not change (only adjacency lists)
     if (graphNum == 1)
     {
-        graph = (Node **)malloc(sizeof(Node *)*highestNode+1);
-        memset(graph, 0, sizeof(Node *)*highestNode+1);
+        graph = (Node **)malloc(sizeof(Node *)*(highestNode+1));
+        numVaccinated = (int *)malloc(sizeof(int));
+        memset(graph, 0, sizeof(Node *)*(highestNode+1));
+        *numVaccinated = 0;
     }
 
 	rewind(f);
@@ -311,4 +314,26 @@ void readGraph(const char *filename, int graphNum) {
 	}
 
 	fclose(f);
+}
+
+void readVaccinated(const char *filename) {
+    FILE *f = fopen(filename, "r");
+
+    if (!f) {
+        fprintf(stderr, "Could not open vaccination file\n");
+        exit(1);
+    }
+
+    char buffer[256];
+
+    while((fgets(buffer, 256, f)) != NULL) {
+        int nodeNum = atoi(buffer);
+        //printf("%d\n",nodeNum);
+        if (graph[nodeNum] == NULL)
+            fprintf(stderr, "WARNING: Node at %d is NULL\n", nodeNum);
+        else {
+            graph[nodeNum]->isVaccinated = true;
+            (*numVaccinated)++;
+        }
+    }
 }
