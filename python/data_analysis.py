@@ -7,34 +7,53 @@ from data_reader import load_infData
 
 from glob import glob
 
+# performs some function to analyze each trial
+# usually turns each trial from a time series into a scalar
+# can be passed straight into `condense_trials()`
+# returned structure is of form analyzed[methods][vacc_rates][stages][trials]
+def analyze_trials(data_graph, func, stages=['sus','inf','rec','newinf']):
+    analyzed = {}
+    for method in data_graph.iterkeys():
+        analyzed[method] = [None]*len(data_graph[method])
+        for i, vacc_rate in enumerate(data_graph[method]): # vaccination rates
+            analyzed[method][i] = [None]*len(vacc_rate)
+            for j, trial in enumerate(data_graph[method][i]): # iterations
+                #for stage, x in data_graph[method][i][j].items(): print stage, np.amax(x[:,1])
+                analyzed[method][i][j] = {stage: func(x) for stage, x in trial.items()}
+            #for stage in stages:
+                ##graph1_peaks[method][i][stage] = [None]*len(vals)
+                #analyzed[method][i][stage] = [np.amax(x[stage][:,1]) for x in data_graph[method][i]]
+    return analyzed
+
 # gets peaks for all trials of input data
 # returned structure is of form peaks[methods][vacc_rates][stages][trials]
 def get_peaks(data_graph, stages=['sus','inf','rec','newinf']):
-    graph_peaks = {}
-    for method in data_graph.iterkeys():
-        graph_peaks[method] = [None]*len(data_graph[method])
-        for i, vacc_rate in enumerate(data_graph[method]): # vaccination rates
-            graph_peaks[method][i] = [None]*len(vacc_rate)
-            for j, trial in enumerate(data_graph[method][i]): # iterations
-                #for stage, x in data_graph[method][i][j].items(): print stage, np.amax(x[:,1])
-                graph_peaks[method][i][j] = {stage: np.amax(x[:,1]) for stage, x in trial.items()}
-            #for stage in stages:
-                ##graph1_peaks[method][i][stage] = [None]*len(vals)
-                #graph_peaks[method][i][stage] = [np.amax(x[stage][:,1]) for x in data_graph[method][i]]
-    return graph_peaks
+    return analyze_trials(data_graph, lambda x: np.amax(x[:,1]), stages)
+    #graph_peaks = {}
+    #for method in data_graph.iterkeys():
+        #graph_peaks[method] = [None]*len(data_graph[method])
+        #for i, vacc_rate in enumerate(data_graph[method]): # vaccination rates
+            #graph_peaks[method][i] = [None]*len(vacc_rate)
+            #for j, trial in enumerate(data_graph[method][i]): # iterations
+                ##for stage, x in data_graph[method][i][j].items(): print stage, np.amax(x[:,1])
+                #graph_peaks[method][i][j] = {stage: np.amax(x[:,1]) for stage, x in trial.items()}
+            ##for stage in stages:
+                ###graph1_peaks[method][i][stage] = [None]*len(vals)
+                ##graph_peaks[method][i][stage] = [np.amax(x[stage][:,1]) for x in data_graph[method][i]]
+    #return graph_peaks
 
 # condenses the peaks by trials using a given function
 # returned structure is of form peaks[methods][vacc_rates][stages]
-def peaks_condense_trials(peaks, func, stages=['sus','inf','rec','newinf']):
-    peaks_condensed = {}
-    for method in peaks.iterkeys():
-        peaks_condensed[method] = [None]*len(peaks[method])
-        for i, vacc_rate in enumerate(peaks[method]): # vaccination rates
-            peaks_condensed[method][i] = {}
+def condense_trials(uncondensed, func, stages=['sus','inf','rec','newinf']):
+    condensed = {}
+    for method in uncondensed.iterkeys():
+        condensed[method] = [None]*len(uncondensed[method])
+        for i, vacc_rate in enumerate(uncondensed[method]): # vaccination rates
+            condensed[method][i] = {}
             for stage in stages:
                 #print [x[stage] for x in vacc_rate]
-                peaks_condensed[method][i][stage] = func([x[stage] for x in vacc_rate])
-    return peaks_condensed
+                condensed[method][i][stage] = func([x[stage] for x in vacc_rate])
+    return condensed
 
 # condense all trials through average
 def get_peaks_avg(peaks, stages=['sus','inf','rec','newinf']):
@@ -46,10 +65,10 @@ def get_peaks_avg(peaks, stages=['sus','inf','rec','newinf']):
             #for stage in stages:
                 #graph_peaks_avg[method][i][stage] = np.mean([x[stage] for x in vacc_rate])
     #return graph_peaks_avg
-    return peaks_condense_trials(peaks, np.mean, stages)
+    return condense_trials(peaks, np.mean, stages)
 
 def get_peaks_highest(peaks, stages=['sus','inf','rec','newinf']):
-    return peaks_condense_trials(peaks, max, stages)
+    return condense_trials(peaks, max, stages)
 
 # Normalize everything by the number of non-vaccinated individuals.
 # Requires 'sus', 'inf', and 'rec' (this one is optional) stages to calculate
