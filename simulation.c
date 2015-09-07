@@ -263,6 +263,8 @@ void runSimulation(char *graphName) {
 
 	fprintf(output, "{\n");
 	fprintf(output, "\t\"name\": \"%s\",\n", graphName);
+    if(strlen(arguments.graph_path2) != 0)
+        fprintf(output, "\t\"graph2\": \"%s\",\n", arguments.graph_path2);
 	fprintf(output, "\t\"nodeCount\": %d,\n", highestNode);
 	fprintf(output, "\t\"edgeCount\": %d,\n", edgeCount);
 	fprintf(output, "\t\"infectionCount\": %d,\n", totalInfections);
