@@ -210,15 +210,16 @@ void runSimulation(char *graphName) {
 		}
 
 		for (j = 0; j <= highestNode; j++) {
-			if (graph[j] != NULL && (graph[j]->isRecovered || graph[j]->isVaccinated)) continue;
+            if (graph[j] == NULL) continue;
+			if (graph[j]->isRecovered || graph[j]->isVaccinated) continue;
 
 			if (checkRecovery(graph[j], i))
 				recoveredThisRound++;
 
-			if (graph[j] != NULL && graph[j]->isInfected)
+			if (graph[j]->isInfected)
 				infectionsThisRound += infectNeighbors(graph[j], i);
 		}
-		
+
 		countNodes(i, totalInfectious, totalRecovered, totalSusceptible, numVaccinated);
 
 		newInfectious[i] = infectionsThisRound;
