@@ -88,6 +88,11 @@ def norm_unvacc(data_graph, stages=['sus','inf','rec','newinf']):
                     normalized[method][i][j][stage] /= unvaccinated
     return normalized
 
+# to be passed into `condense_trials` as argument
+# count number of trials that didn't have outbreaks, given a threshold
+def count_no_outbreaks(trials, threshold=0.1):
+    return len(filter(lambda x: x < threshold, trials))
+
 #def get_peaks_avg(data_graph):
     #graph_peaks_avg = {}
     #stages = ['sus','inf','rec','newinf']
@@ -139,10 +144,6 @@ if __name__=="__main__":
     methods=["deg","ev","pr", "rnd"]
     #vals=[20,40,60,80]
     vacc_rates = [10, 20, 30, 35, 40, 45, 50, 55, 60, 70, 80, 90]
-
-    data_graph1 = load_all_data("../output/norm_100000_m6_s4", vacc_rates)
-    data_graph2 = load_all_data("../output/ring_100000_m6", vacc_rates)
-    data_graph3 = load_all_data("../output/norm_100000_m16_s4", vacc_rates)
 
     #graph1_dir = "../output/norm_100000_m6_s4"
     #data_graph1 = {}

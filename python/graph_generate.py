@@ -2,9 +2,11 @@
 
 # generate a graph based on a normal distribution
 
+import numpy as np
 import scipy as sp
 import scipy.stats
 from graph_tool import Graph
+from graph_tool import generation
 
 import random
 
@@ -79,19 +81,21 @@ def normal_dist_graph(mean=10, stdev=5, num_vtx=100):
 # generate a ring that is connected to neighbors with distance 'k'
 # also, redirect edges using probability 'p' (0 = ring, 1 = random graph)
 def ring(num_vtx=100, k=2, p=0.0):
-    g = Graph(directed=False)
-    vtx = list(g.add_vertex(num_vtx))
+    g = generation.circular_graph(num_vtx, k=k)
+    #g = Graph(directed=False)
+    #vtx = list(g.add_vertex(num_vtx))
 
-    # connect neighbors
-    for i in vtx:
-        for j in xrange(-k,k+1):
-            if j==0: continue
-            dest = g.vertex( (g.vertex_index[i]+j)%num_vtx )
-            if(g.edge(i,dest) is None):
-                g.add_edge(i,dest)
+    ## connect neighbors
+    #for i in vtx:
+        #for j in xrange(-k,k+1):
+            #if j==0: continue
+            #dest = g.vertex( (g.vertex_index[i]+j)%num_vtx )
+            #if(g.edge(i,dest) is None):
+                #g.add_edge(i,dest)
 
     # redirect edges
     #old_edges = list(g.edges())
+    vtx = list(g.vertices())
     old_edges = [(x.source(), x.target()) for x in g.edges()]
     for i in old_edges:
         n = random.random()
@@ -108,6 +112,15 @@ def ring(num_vtx=100, k=2, p=0.0):
             g.add_edge(i[0], dest)
 
     return g
+
+# This is to arrange all nodes in a ring of a certain radius.
+# For use with `graph_tool.draw.graph_draw` as the `layout`
+def ring_layout(g, radius):
+    layout = g.new_vertex_property("vector<double>")
+    for i,vtx in enumerate(g.vertices()):
+        layout[vtx] = [radius * np.cos(2*np.pi/g.num_vertices()*i),
+                    radius * np.sin(2*np.pi/g.num_vertices()*i)]
+    return layout
 
 if __name__ == "__main__":
     #normal_dist_graph(mean=10, stdev=5, num_vtx=10000)
