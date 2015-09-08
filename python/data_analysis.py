@@ -141,6 +141,7 @@ def load_all_data(data_dir, vacc_rates, methods=["deg","ev","pr","rnd"]):
     return data_graph
 
 if __name__=="__main__":
+    exit(0)
     methods=["deg","ev","pr", "rnd"]
     #vals=[20,40,60,80]
     vacc_rates = [10, 20, 30, 35, 40, 45, 50, 55, 60, 70, 80, 90]
