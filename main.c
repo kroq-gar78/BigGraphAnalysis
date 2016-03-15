@@ -1,6 +1,8 @@
 #include "graph.h"
 #include "simulation.h"
 
+#define ARGP_KEY_DIRECTED 777
+
 // first, set up argparse
 const char *argp_program_version = "ReadGraph";
 static char doc[] = "Graph reader and SIR model -- analyze graphs and run SIR epidemics with given parameters";
@@ -10,9 +12,9 @@ static char args_doc[] = "ARG1 ARG2";
 static struct argp_option options[] =
 {
     {"analyze", 'a', 0, 0, "Produce a degree distribution of the graph"},
+    {"directed", ARGP_KEY_DIRECTED, 0, 0, "Treat the input graph as directed. Default is undirected."},
     {"output",  'o', "FILE", 0, "Use FILE instead of 'web/data.json' or 'web/infData.json'. Note that data in 'web/' is not changed, so JavaScript graphs aren't updated."},
     {"infect",  'r', "TYPE", OPTION_ARG_OPTIONAL, "Run an SIR (or derivative) simulation on the graph. TYPE determines the type of infection to model."},
-
     {0,0,0,0, "Simulation options:"},
     {"graph2",   '2', "FILE", 0, "A second graph to multiplex during the simulation (switiching times are hard-coded in `simulation.c`)"},
     {"pinfect",  'i', "PROB", 0, "Probability of an infected node infecting a susceptible neighbor"},
@@ -32,6 +34,9 @@ static error_t parse_opt(int key, char *arg, struct argp_state *state) {
             break;
         case 'o':
             arguments->outfile = arg;
+            break;
+        case ARGP_KEY_DIRECTED:
+            arguments->directed = true;
             break;
         case 'a':
             arguments->action = 'a';
@@ -87,6 +92,7 @@ int main(int argc, char **argv) {
     arguments.graph_path2 = "";
     arguments.vacc_path = "";
     arguments.outfile = "";
+    arguments.directed = false;
     arguments.action = 0;
     arguments.type = 0;
     arguments.infectiousProbability = -1;
