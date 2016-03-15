@@ -42,7 +42,7 @@ static error_t parse_opt(int key, char *arg, struct argp_state *state) {
             break;
         case 'r':
             arguments->action = 'r';
-            if(*arg == '=')
+            if(arg && *arg == '=')
             {
                 *arg = arg[1];
             }
