@@ -33,6 +33,10 @@ static error_t parse_opt(int key, char *arg, struct argp_state *state) {
             break;
         case 'r':
             arguments->action = 'r';
+            if(arg == '=')
+            {
+                *arg = arg[1];
+            }
             arguments->type = arg ? *arg : 0; // only first character matters anyway
             break;
         case 'i':
