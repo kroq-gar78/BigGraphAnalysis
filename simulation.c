@@ -40,18 +40,16 @@ int infectNeighbors(Node *node, int round, int graphNum) {
 	}
 
 	Node *temp = NULL;
-    if (graphNum == 1) temp = node->next1;
-    else temp = node->next2;
+    temp = node->next[graphNum];
 
 	int newInfectious = 0;
 	int maxNum = (int)ceil(kVal * countDegree(node, graphNum));
 	if(maxNum <= 0) return 0;
 	while (temp != NULL) {
-  if (graph[temp->vertexNum] != NULL && !graph[temp->vertexNum]->isInfected && !graph[temp->vertexNum]->isVaccinated) {
+        if (graph[temp->vertexNum] != NULL && !graph[temp->vertexNum]->isInfected && !graph[temp->vertexNum]->isVaccinated) {
 			if (graph[temp->vertexNum]->isRecovered) {
 				temp->isRecovered = true;
-				if (graphNum == 1) temp = temp->next1;
-                else temp = temp->next2;
+                temp = temp->next[graphNum];
 				continue;
 			}
 
@@ -63,8 +61,7 @@ int infectNeighbors(Node *node, int round, int graphNum) {
 
 			if (chance < infectiousProbability) {
 				if (round == graph[temp->vertexNum]->roundRecovered) {
-					if (graphNum == 1) temp = temp->next1;
-                    else temp = temp->next2;
+                    temp = temp->next[graphNum];
 					continue;
 				}
 
@@ -81,8 +78,7 @@ int infectNeighbors(Node *node, int round, int graphNum) {
 			}
 		}
 
-		if (graphNum == 1) temp = temp->next1;
-        else temp = temp->next2;
+        temp = temp->next[graphNum];
 	}
 
 	return newInfectious;
@@ -207,7 +203,7 @@ void runSimulation(char *graphName) {
 	bool lastRound = false;
 	for (i = 0; i < simulDuration; i++) {
 		printf("\rPerforming timestep %d", i);
-        int graphNum = (i%2)+1;
+        int graphNum = (i%numLayers);
         /*int graphNum = 1;*/
 
 		int infectionsThisRound = 0, recoveredThisRound = 0;

@@ -16,8 +16,7 @@
 #endif
 
 typedef struct Node_t {
-	struct Node_t *next1;
-	struct Node_t *next2;
+	struct Node_t **next; // array element corresponds to neighbor in layer
 
 	int vertexNum;
 
@@ -46,6 +45,8 @@ struct arguments {
 struct arguments arguments;
 
 Node **graph;
+
+int numLayers; // number of layers in the multiplex
 
 float infectiousProbability;
 int highestNode;

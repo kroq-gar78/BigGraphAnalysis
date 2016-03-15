@@ -38,6 +38,7 @@ static error_t parse_opt(int key, char *arg, struct argp_state *state) {
             break;
         case '2':
             arguments->graph_path2 = arg;
+            numLayers = 2;
             break;
         case 'r':
             arguments->action = 'r';
@@ -75,6 +76,9 @@ static struct argp argp = {options, parse_opt, args_doc, doc};
 
 int main(int argc, char **argv) {
 
+    // TODO: integrate this better with argp
+    numLayers = 1;
+
     // define defaults
     arguments.graph_path2 = "";
     arguments.vacc_path = "";
@@ -101,9 +105,9 @@ int main(int argc, char **argv) {
 	clock_t t1, t2;
 	t1 = clock();
 
-	readGraph(arguments.graph_path, 1);
-    if (strlen(arguments.graph_path2) > 0) readGraph(arguments.graph_path2, 2);
-    else readGraph(arguments.graph_path, 2);
+	readGraph(arguments.graph_path, 0);
+    if (strlen(arguments.graph_path2) > 0) readGraph(arguments.graph_path2, 1);
+    /*else readGraph(arguments.graph_path, 1);*/
 
     if (strlen(arguments.vacc_path) > 0) readVaccinated(arguments.vacc_path);
 
@@ -128,7 +132,7 @@ int main(int argc, char **argv) {
     }
 
 	if (choice == 'a')
-		graphStats(tok);
+		graphStats(tok, 0);
 	else
 		runSimulation(tok);
 

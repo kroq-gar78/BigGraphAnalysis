@@ -15,23 +15,26 @@ Node *createNode(int vertexNum) {
 	newNode->roundInfected = -1;
 	newNode->roundRecovered = -1;
 
-	newNode->next1 = NULL;
-    newNode->next2 = NULL;
+	newNode->next = (Node **)malloc(sizeof(Node *)*numLayers);
+    // don't if you can memset to NULL, so this is a workaround
+    int i;
+    for(i = 0; i < numLayers; i++)
+    {
+        newNode->next[i] = NULL;
+    }
 
 	return newNode;
 }
 
 bool checkConnection(Node *srcNode, int dest, int graphNum) {
     Node *temp = NULL;
-	if(graphNum == 1) temp = srcNode->next1;
-    else temp = srcNode->next2;
+    temp = srcNode->next[graphNum];
 
 	while (temp != NULL) {
 		if (temp->vertexNum == dest)
 			return true;
 
-        if(graphNum == 1) temp = temp->next1;
-        else temp = temp->next2;
+        temp = temp->next[graphNum];
 	}
 
 	return false;
@@ -47,16 +50,11 @@ void connectNode(int src, int dest, int graphNum) {
 	Node *newNode;
 
 	if (!checkConnection(temp, dest, graphNum)) {
-        if (graphNum == 1)
-            while (temp->next1 != NULL)
-                temp = temp->next1;
-        else
-            while (temp->next2 != NULL)
-                temp = temp->next2;
+        while(temp->next[graphNum] != NULL)
+            temp = temp->next[graphNum];
 
 		newNode = createNode(dest);
-		if (graphNum == 1) temp->next1 = newNode;
-        else temp->next2 = newNode;
+        temp->next[graphNum] = newNode;
 	}
 
 	if (graph[dest] == NULL) {
@@ -67,16 +65,11 @@ void connectNode(int src, int dest, int graphNum) {
 	temp = graph[dest];
 
 	if (!checkConnection(temp, src, graphNum)) {
-        if (graphNum == 1)
-            while (temp->next1 != NULL)
-                temp = temp->next1;
-        else
-            while (temp->next2 != NULL)
-                temp = temp->next2;
+        while(temp->next[graphNum] != NULL)
+            temp = temp->next[graphNum];
 
 		newNode = createNode(src);
-		if (graphNum == 1) temp->next1 = newNode;
-        else temp->next2 = newNode;
+        temp->next[graphNum] = newNode;
 	}
 
 	edgeCount++;
@@ -86,16 +79,10 @@ int countDegree(Node *node, int graphNum) {
 	int count = 0;
 	Node *temp = node;
 	if (temp != NULL) {
-        if (graphNum == 1)
-            while (temp->next1 != NULL) {
-                count++;
-                temp = temp->next1;
-            }
-        else
-            while (temp->next2 != NULL) {
-                count++;
-                temp = temp->next2;
-            }
+        while (temp->next[graphNum] != NULL) {
+            count++;
+            temp = temp->next[graphNum];
+        }
 	}
 
 	return count;
@@ -239,7 +226,7 @@ void degreeStats(char *filename, int graphNum) {
 	printf("Lowest degree:   %8d (#%d)\n", lowestDegree, lowestDegNum);
 	printf("Average degree:  %8f\n", averageDegree);
 
-	writeDegreeDistribution(highestDegree, lowestDegree, averageDegree, filename, 1);
+	writeDegreeDistribution(highestDegree, lowestDegree, averageDegree, filename, 0);
 }
 
 void graphStats(char *filename, int graphNum) {
@@ -294,7 +281,7 @@ void readGraph(const char *filename, int graphNum) {
 
     // assuming that graph 1 is read before graph 2
     // the graph itself does not change (only adjacency lists)
-    if (graphNum == 1)
+    if (graphNum == 0)
     {
         graph = (Node **)malloc(sizeof(Node *)*(highestNode+1));
         numVaccinated = (int *)malloc(sizeof(int));
