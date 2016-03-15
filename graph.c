@@ -31,7 +31,7 @@ bool checkConnection(Node *srcNode, int dest) {
 	return false;
 }
 
-void connectNode(int src, int dest) {
+void connectNode(int src, int dest, bool directed) {
 	if (graph[src] == NULL) {
 		Node *head = createNode(src);
 		graph[src] = head;
@@ -48,20 +48,22 @@ void connectNode(int src, int dest) {
 		temp->next = newNode;
 	}
 
-	if (graph[dest] == NULL) {
-		Node *head = createNode(dest);
-		graph[dest] = head;
-	}
+    if(!directed) {
+        if (graph[dest] == NULL) {
+            Node *head = createNode(dest);
+            graph[dest] = head;
+        }
 
-	temp = graph[dest];
+        temp = graph[dest];
 
-	if (!checkConnection(temp, src)) {
-		while (temp->next != NULL)
-			temp = temp->next;
+        if (!checkConnection(temp, src)) {
+            while (temp->next != NULL)
+                temp = temp->next;
 
-		newNode = createNode(src);
-		temp->next = newNode;
-	}
+            newNode = createNode(src);
+            temp->next = newNode;
+        }
+    }
 
 	edgeCount++;
 }
@@ -280,7 +282,7 @@ void readGraph(const char *filename) {
 		tok = strtok(NULL, " \t");
 		int dest = atoi(tok);
 
-		connectNode(src, dest);
+		connectNode(src, dest, arguments.directed);
 	}
 
 	fclose(f);

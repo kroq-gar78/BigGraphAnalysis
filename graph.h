@@ -38,6 +38,7 @@ struct arguments {
     float kVal;
     int infectiousPeriod;
     int simulDuration;
+    bool directed;
 };
 struct arguments arguments;
 
