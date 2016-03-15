@@ -140,9 +140,10 @@ void runSimulation(char *graphName) {
      **/
     type = arguments.type;
     if (type == 0) {
-        printf("Select simulation: [n]ormal, [a]ccumulative, or [r]einfect: ");
-        scanf(" %c", &type);
+        printf("Select simulation: [n]ormal, [a]ccumulative, or [r]einfect (default 'n'): ");
+        scanf("%c", &type);
     }
+    if(type != 'a' && type != 'a') type = 'n';
 
     infectiousProbability = arguments.infectiousProbability;
     if (infectiousProbability == -1) {
