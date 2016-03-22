@@ -49,20 +49,8 @@ void connectNode(int src, int dest, bool directed) {
 	}
 
     if(!directed) {
-        if (graph[dest] == NULL) {
-            Node *head = createNode(dest);
-            graph[dest] = head;
-        }
-
-        temp = graph[dest];
-
-        if (!checkConnection(temp, src)) {
-            while (temp->next != NULL)
-                temp = temp->next;
-
-            newNode = createNode(src);
-            temp->next = newNode;
-        }
+        connectNode(dest, src, true);
+        edgeCount--; // only count unweighted edges once
     }
 
 	edgeCount++;
