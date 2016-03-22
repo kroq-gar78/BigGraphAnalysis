@@ -101,7 +101,7 @@ int main(int argc, char **argv) {
 	clock_t t1, t2;
 	t1 = clock();
 
-	readGraph(arguments.graph_path);
+    readGraph(arguments.graph_path, arguments.directed);
 
 	t1 = clock() - t1; // Done reading
 	t2 = clock();

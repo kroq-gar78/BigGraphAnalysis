@@ -246,7 +246,7 @@ void printGraph() {
 	}
 }
 
-void readGraph(const char *filename) {
+void readGraph(const char *filename, bool directed) {
 	FILE *f = fopen(filename, "r");
 
 	if (!f) {
@@ -282,7 +282,7 @@ void readGraph(const char *filename) {
 		tok = strtok(NULL, " \t");
 		int dest = atoi(tok);
 
-		connectNode(src, dest, arguments.directed);
+		connectNode(src, dest, directed);
 	}
 
 	fclose(f);

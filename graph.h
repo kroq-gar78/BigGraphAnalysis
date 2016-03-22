@@ -48,7 +48,7 @@ float infectiousProbability;
 int highestNode;
 int edgeCount;
 
-void readGraph(const char *filename);
+void readGraph(const char *filename, bool directed);
 int countDegree(Node *node);
 bool checkConnection(Node *srcNode, int dest);
 
