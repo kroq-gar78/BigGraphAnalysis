@@ -264,8 +264,13 @@ void readGraph(const char *filename, bool directed, bool weighted) {
 
 		if (nodeNum > highestNode)
 			highestNode = nodeNum;
-
+        
+        tok = strtok(NULL, " \t");
+        float weight = atof(tok);
+        if (weight > highestWeight)
+            highestWeight = weight;
 	}
+    printf("highest weight: %f\n", highestWeight);
 
 	graph = (Node **)malloc(sizeof(Node *)*(highestNode+1));
 	memset(graph, 0, sizeof(Node *)*(highestNode+1));
@@ -284,6 +289,7 @@ void readGraph(const char *filename, bool directed, bool weighted) {
             tok = strtok(NULL, " \t");
             weight = atof(tok);
         }
+        if(arguments.normalize) weight /= highestWeight;
 
 		connectNode(src, dest, directed, weight);
 	}

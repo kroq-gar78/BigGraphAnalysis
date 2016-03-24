@@ -3,6 +3,7 @@
 
 #define ARGP_KEY_DIRECTED 777
 #define ARGP_KEY_WEIGHTED 778
+#define ARGP_KEY_NORMALIZE 779
 
 // first, set up argparse
 const char *argp_program_version = "ReadGraph";
@@ -15,6 +16,7 @@ static struct argp_option options[] =
     {"analyze", 'a', 0, 0, "Produce a degree distribution of the graph"},
     {"directed", ARGP_KEY_DIRECTED, 0, 0, "Treat the input graph as directed. Default is undirected."},
     {"weighted", ARGP_KEY_WEIGHTED, 0, 0, "Treat the input graph as weighted. An edge weight must be specified for each edge. Default is unweighted."},
+    {"normalize", ARGP_KEY_NORMALIZE, 0, 0, "Divide the edge weights by the maximum edge weight. May be necessary if edge weights are greater than 1."},
     {"output",  'o', "FILE", 0, "Use FILE instead of 'web/data.json' or 'web/infData.json'. Note that data in 'web/' is not changed, so JavaScript graphs aren't updated."},
     {"infect",  'r', "TYPE", OPTION_ARG_OPTIONAL, "Run an SIR (or derivative) simulation on the graph. TYPE determines the type of infection to model."},
     {0,0,0,0, "Simulation options:"},
@@ -37,6 +39,9 @@ static error_t parse_opt(int key, char *arg, struct argp_state *state) {
             break;
         case ARGP_KEY_WEIGHTED:
             arguments->weighted = true;
+            break;
+        case ARGP_KEY_NORMALIZE:
+            arguments->normalize = true;
             break;
         case 'a':
             arguments->action = 'a';

@@ -41,6 +41,7 @@ struct arguments {
     int simulDuration;
     bool directed;
     bool weighted;
+    bool normalize;
 };
 struct arguments arguments;
 
@@ -49,6 +50,7 @@ Node **graph;
 float infectiousProbability;
 int highestNode;
 int edgeCount;
+float highestWeight;
 
 void readGraph(const char *filename, bool directed, bool weighted);
 int countDegree(Node *node);

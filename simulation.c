@@ -46,6 +46,10 @@ int infectNeighbors(Node *node, int round) {
 
 			float chance = (float)(rand() % 100) / 100;
 
+            // check if it's enough for the edge weight
+            if (chance > temp->weight) { continue; }
+
+			chance = (float)(rand() % 100) / 100;
 			if (chance < infectiousProbability) {
 				if (round == graph[temp->vertexNum]->roundRecovered) {
 					temp = temp->next;
