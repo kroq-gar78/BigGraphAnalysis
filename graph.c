@@ -39,6 +39,10 @@ void connectNode(int src, int dest, bool directed, float weight) {
 		Node *head = createNode(src);
 		graph[src] = head;
 	}
+    if (graph[dest] == NULL) {
+        Node *d = createNode(dest);
+        graph[dest] = d;
+    }
 
 	Node *temp = graph[src];
 	Node *newNode;
