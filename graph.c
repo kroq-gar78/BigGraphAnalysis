@@ -14,7 +14,9 @@ Node *createNode(int vertexNum) {
 	newNode->roundInfected = -1;
 	newNode->roundRecovered = -1;
 	newNode->next = NULL;
-    newNode->weight = 1; // TODO: consider setting default to 0
+
+    // TODO: consider setting default to 0
+    newNode->weight = 1; // refers to weight of the edge between this node and the previous node
 
 	return newNode;
 }
@@ -46,8 +48,8 @@ void connectNode(int src, int dest, bool directed, float weight) {
 			temp = temp->next;
 
 		newNode = createNode(dest);
+        newNode->weight = weight;
 		temp->next = newNode;
-        temp->weight = weight;
 	}
 
     if(!directed) {
