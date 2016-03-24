@@ -17,6 +17,7 @@
 
 typedef struct Node_t {
 	struct Node_t *next;
+    float weight; // the weight of the edge between the current node and `next[i]`
 
 	int vertexNum;
 
@@ -39,6 +40,7 @@ struct arguments {
     int infectiousPeriod;
     int simulDuration;
     bool directed;
+    bool weighted;
 };
 struct arguments arguments;
 
@@ -48,7 +50,7 @@ float infectiousProbability;
 int highestNode;
 int edgeCount;
 
-void readGraph(const char *filename, bool directed);
+void readGraph(const char *filename, bool directed, bool weighted);
 int countDegree(Node *node);
 bool checkConnection(Node *srcNode, int dest);
 

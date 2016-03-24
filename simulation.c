@@ -260,6 +260,7 @@ void runSimulation(char *graphName) {
 	fprintf(output, "\t\"nodeCount\": %d,\n", highestNode);
 	fprintf(output, "\t\"edgeCount\": %d,\n", edgeCount);
     fprintf(output, "\t\"directed\": %s,\n", arguments.directed ? "true" : "false");
+    fprintf(output, "\t\"directed\": %s,\n", arguments.weighted ? "true" : "false");
 	fprintf(output, "\t\"infectionCount\": %d,\n", totalInfections);
 	fprintf(output, "\t\"patientZero\": %d,\n", zero);
 	fprintf(output, "\t\"simulDuration\": %d,\n", simulDuration);

@@ -14,6 +14,7 @@ Node *createNode(int vertexNum) {
 	newNode->roundInfected = -1;
 	newNode->roundRecovered = -1;
 	newNode->next = NULL;
+    newNode->weight = 1; // TODO: consider setting default to 0
 
 	return newNode;
 }
@@ -31,7 +32,7 @@ bool checkConnection(Node *srcNode, int dest) {
 	return false;
 }
 
-void connectNode(int src, int dest, bool directed) {
+void connectNode(int src, int dest, bool directed, float weight) {
 	if (graph[src] == NULL) {
 		Node *head = createNode(src);
 		graph[src] = head;
@@ -46,10 +47,11 @@ void connectNode(int src, int dest, bool directed) {
 
 		newNode = createNode(dest);
 		temp->next = newNode;
+        temp->weight = weight;
 	}
 
     if(!directed) {
-        connectNode(dest, src, true);
+        connectNode(dest, src, true, weight);
         edgeCount--; // only count unweighted edges once
     }
 
@@ -234,7 +236,7 @@ void printGraph() {
 	}
 }
 
-void readGraph(const char *filename, bool directed) {
+void readGraph(const char *filename, bool directed, bool weighted) {
 	FILE *f = fopen(filename, "r");
 
 	if (!f) {
@@ -270,7 +272,14 @@ void readGraph(const char *filename, bool directed) {
 		tok = strtok(NULL, " \t");
 		int dest = atoi(tok);
 
-		connectNode(src, dest, directed);
+        float weight = 1;
+        if(weighted)
+        {
+            tok = strtok(NULL, " \t");
+            weight = atof(tok);
+        }
+
+		connectNode(src, dest, directed, weight);
 	}
 
 	fclose(f);
