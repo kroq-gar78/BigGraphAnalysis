@@ -17,6 +17,7 @@
 
 typedef struct Node_t {
 	struct Node_t **next; // array element corresponds to neighbor in layer
+    float *weight; // the weight of the edge between the current node and `next[i]`
 
 	int vertexNum;
 
@@ -42,6 +43,7 @@ struct arguments {
     int infectiousPeriod;
     int simulDuration;
     bool directed;
+    bool weighted;
 };
 struct arguments arguments;
 
@@ -54,9 +56,8 @@ int highestNode;
 int edgeCount;
 int *numVaccinated;
 
-void readGraph(const char *filename, int graphNum);
+void readGraph(const char *filename, int graphNum, bool directed, bool weighted);
 void readVaccinated(const char *filename);
-int countDegree(Node *node, int graphNum);
 bool checkConnection(Node *srcNode, int dest, int graphNum);
 
 #endif

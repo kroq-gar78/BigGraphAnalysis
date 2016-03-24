@@ -16,11 +16,14 @@ Node *createNode(int vertexNum) {
 	newNode->roundRecovered = -1;
 
 	newNode->next = (Node **)malloc(sizeof(Node *)*numLayers);
-    // don't if you can memset to NULL, so this is a workaround
+    newNode->weight = (float *)malloc(sizeof(float)*numLayers); // refers to weight of the edge between this node and the previous node
+
+    // don't if you can memset to NULL, so this is a workaround; also don't memset float
     int i;
     for(i = 0; i < numLayers; i++)
     {
         newNode->next[i] = NULL;
+        newNode->weight[i] = 1; // TODO: consider setting default to 0
     }
 
 	return newNode;
@@ -40,7 +43,7 @@ bool checkConnection(Node *srcNode, int dest, int graphNum) {
 	return false;
 }
 
-void connectNode(int src, int dest, int graphNum, bool directed) {
+void connectNode(int src, int dest, int graphNum, bool directed, float weight) {
 	if (graph[src] == NULL) {
 		Node *head = createNode(src);
 		graph[src] = head;
@@ -54,24 +57,13 @@ void connectNode(int src, int dest, int graphNum, bool directed) {
             temp = temp->next[graphNum];
 
 		newNode = createNode(dest);
+        newNode->weight[graphNum] = weight;
         temp->next[graphNum] = newNode;
 	}
 
     if(!directed) {
-        if (graph[dest] == NULL) {
-            Node *head = createNode(dest);
-            graph[dest] = head;
-        }
-
-        temp = graph[dest];
-
-        if (!checkConnection(temp, src, graphNum)) {
-            while(temp->next[graphNum] != NULL)
-                temp = temp->next[graphNum];
-
-            newNode = createNode(src);
-            temp->next[graphNum] = newNode;
-        }
+        connectNode(dest, src, graphNum, true, weight);
+        edgeCount--; // only count unweighted edges once
     }
 
 	edgeCount++;
@@ -256,7 +248,7 @@ void graphStats(char *filename, int graphNum) {
 	}
 }*/
 
-void readGraph(const char *filename, int graphNum) {
+void readGraph(const char *filename, int graphNum, bool directed, bool weighted) {
 	FILE *f = fopen(filename, "r");
 
 	if (!f) {
@@ -299,7 +291,14 @@ void readGraph(const char *filename, int graphNum) {
 		tok = strtok(NULL, " \t");
 		int dest = atoi(tok);
 
-		connectNode(src, dest, graphNum, arguments.directed);
+        float weight = 1;
+        if(weighted)
+        {
+            tok = strtok(NULL, " \t");
+            weight = atof(tok);
+        }
+
+		connectNode(src, dest, graphNum, directed, weight);
 	}
 
 	fclose(f);

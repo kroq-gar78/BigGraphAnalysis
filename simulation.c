@@ -280,6 +280,8 @@ void runSimulation(char *graphName) {
         fprintf(output, "\t\"graph2\": \"%s\",\n", arguments.graph_path2);
 	fprintf(output, "\t\"nodeCount\": %d,\n", highestNode);
 	fprintf(output, "\t\"edgeCount\": %d,\n", edgeCount);
+    fprintf(output, "\t\"directed\": %s,\n", arguments.directed ? "true" : "false");
+    fprintf(output, "\t\"weighted\": %s,\n", arguments.weighted ? "true" : "false");
     fprintf(output, "\t\"numVaccinated\": %d,\n", *numVaccinated);
 	fprintf(output, "\t\"infectionCount\": %d,\n", totalInfections);
 	fprintf(output, "\t\"patientZero\": %d,\n", zero);
